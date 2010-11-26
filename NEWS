@@ -1,0 +1,21 @@
+TODO
+
+How to respect predefined scale_colour_manual() in ggplot2?
+http://stackoverflow.com/questions/3337765/can-i-use-direct-label-with-ggplots-scale-colour-manual
+I tried to do a hack that looks into p$scales$.scales to turn off the
+legend (r371), but that didn't work so well, so I went back to the
+method of just adding a new scale_colour_discrete(legend=FALSE) (r382)
+For now, just set the scale_colour_manual AFTER the call to direct.label():
+p <- ggplot(...)
+p2 <- direct.label(p)
+p2+scale_colour_manual(...)
+
+Need to figure out how to calculate label bounding boxes for ggplot2.
+
+closest.on.ahull calculation should take into account visual
+coordinates, not plotting coordinates (could run into problems if
+horiz and vert axes are on widely different scales).
+
+1.1 26 nov 2010 delete many examples so CRAN check completes quicker.
+
+1.0 16 nov 2010 initial release attempted to CRAN -- too many examples.
