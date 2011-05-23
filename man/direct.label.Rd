@@ -31,6 +31,7 @@ print(direct.label(scatter,list(extreme.grid,dl.move("suv",15,15))))
 m <- lm(cty~displ,data=mpg)
 mpgf <- fortify(m,mpg)
 library(lattice)
+oldopt <- lattice.options(panel.error=NULL)
 mpg.scatter <- xyplot(jitter(.resid)~jitter(.fitted),mpgf,groups=factor(cyl))
 plot(direct.label(mpg.scatter))
 
@@ -51,8 +52,9 @@ mpgs2 <- update(mpg.scatter,
 plot(direct.label(mpgs2,list(cex=2,smart.grid)))
 
 data(Chem97,package="mlmRev")
-qqm <- qqmath(~gcsescore,Chem97,groups=gender,f.value=ppoints(25),auto.key=TRUE)
-plot(direct.label(qqm,empty.grid.fun(get.means)))
+qqm <- qqmath(~gcsescore,Chem97,groups=gender,
+              f.value=ppoints(25),auto.key=list())
+plot(direct.label(qqm,list("get.means","empty.grid"),TRUE))
 ## default for points is different for default for lines
 plot(direct.label(update(qqm,type=c("l","g"))))
 ## you can hard-core label positions if you really want to:
@@ -72,7 +74,13 @@ direct.label(densityplot(~value|variable,iris2,groups=Species,scales="free"))
 loci <- data.frame(ppp=c(rbeta(800,10,10),rbeta(100,0.15,1),rbeta(100,1,0.15)),
                    type=factor(c(rep("NEU",800),rep("POS",100),rep("BAL",100))))
 plot(direct.label(densityplot(~ppp,loci,groups=type,n=500)))
-print(direct.label(qplot(ppp,data=loci,colour=type,geom="density"),top.points))
+lplot <- qplot(ppp,data=loci,colour=type,geom="density")
+print(direct.label(lplot))
+## respect the manual color scale. these 2 should be the same:
+lplot2 <- direct.label(lplot)+
+  scale_colour_manual(values=c("red","black","blue"),legend=FALSE)
+print(lplot2)
+print(direct.label(lplot+scale_colour_manual(values=c("red","black","blue"))))
 
 ## dotplot:
 plot(direct.label(dotplot(VADeaths,type="o"),angled.endpoints))
@@ -88,7 +96,11 @@ names(vad) <- c("age","demographic","deaths")
 p2 <- qplot(deaths,age,data=vad,
             group=demographic,geom="line",colour=demographic)
 print(direct.label(p2,angled.endpoints)+xlim(5,80))
-
+vad2 <- as.data.frame.table(VAD2)
+names(vad2) <- names(vad)
+p3 <- qplot(deaths,age,data=vad2,
+            group=demographic,geom="line",colour=demographic)
+direct.label(p3,"top.points")
 ## contour plot
 volcano3d <- melt(volcano)
 names(volcano3d) <- c("x", "y", "z")
@@ -160,4 +172,26 @@ p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
             xlab=expression(df(lambda)))
 print(direct.label(update(p,xlim=c(0,9.25)),
                    list(last.qp,cex=0.75,dl.trans(x=x+0.1))))
+
+## some data from clustering algorithms
+data(iris.l1.cluster,package="directlabels")
+p <- ggplot(iris.l1.cluster,aes(lambda,alpha,group=row,colour=Species))+
+  geom_line(alpha=1/4)+
+  facet_grid(col~.)
+p2 <- p+xlim(-0.0025,max(iris.l1.cluster$lambda))
+print(direct.label(p2,list(first.points,get.means)))
+
+## TODO
+data(normal.l2.cluster,package="directlabels")
+p <- ggplot(normal.l2.cluster$path,aes(x,y))+
+  geom_path(aes(group=row),colour="grey")+
+  geom_point(aes(size=lambda),colour="grey")+
+  geom_point(aes(colour=class),data=normal.l2.cluster$pts)+
+  coord_equal()
+print(direct.label(p))
+## respect the color scale. these should look the same:
+print(direct.label(p+scale_colour_manual(values=rainbow(8))))
+print(direct.label(p)+scale_colour_manual(values=rainbow(8),legend=FALSE))
+
+lattice.options(oldopt)
 }

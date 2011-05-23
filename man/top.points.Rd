@@ -1,7 +1,7 @@
 \name{top.points}
 \alias{top.points}
 \title{top points}
-\description{Positioning Function for the top of a group of points.}
+\description{Positioning Method for the top of a group of points.}
 \usage{
 top.points(d, ...)
 }

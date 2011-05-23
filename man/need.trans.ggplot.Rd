@@ -2,7 +2,7 @@
 \alias{need.trans.ggplot}
 \docType{data}
 \title{need trans ggplot}
-\description{Geoms which need translation before applying Positioning Function.}
+\description{Geoms which need translation before applying Positioning Method.}
 \usage{need.trans.ggplot}
 
 

@@ -31,6 +31,7 @@ columns. Otherwise, do the opposite.}
 \examples{
 library(lattice)
 library(ggplot2)
+oldopt <- lattice.options(panel.error=NULL)
 dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
 ddf <- melt(as.data.frame(dts),id="time")
 names(ddf) <- c("time","sex","deaths")
@@ -45,15 +46,17 @@ dlcompare(plots,pos.funs,rects=FALSE) ## hide the grid
 dlcompare(plots,pos.funs,rects=FALSE,row.items="posfuns") ## exchange axes
 ##dev.off();system("xpdf compare.pdf")
 
-## Try some more exotic labeling options.
-exotic <- list(lines2,
-               rot=c(0,180),
-               fontsize=c(10,20),
-               fontface=c("bold","italic"),
-               fontfamily=c("mono","serif"),
-               alpha=c(0.25,1))
-## Currently ggplot2 backend doesn't support face and family.
-dlcompare(plots,list(exotic))
+if(names(dev.cur())!="postscript"){##to avoid error on pkg check
+  ## Try some more exotic labeling options.
+  exotic <- list(lines2,
+                 rot=c(0,180),
+                 fontsize=c(10,20),
+                 fontface=c("bold","italic"),
+                 fontfamily=c("mono","serif"),
+                 alpha=c(0.25,1))
+  ## Currently ggplot2 backend doesn't support face and family.
+  dlcompare(plots,list(exotic))
+}
 
 ## All of these subsets should produce valid comparison plots.
 dlcompare(plots[1],pos.funs[1])
@@ -68,8 +71,6 @@ dlcompare(plots,mixed.funs[3])
 
 data(BodyWeight,package="nlme")
 ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type="l",layout=c(3,1))
-## lines2 works well only when there are 2 groups
-dlcompare(list(plots[[1]],ratplot),list("first.points","lines2"))
 
 ## Compare scatterplot labeling methods.
 scatters <-
@@ -122,4 +123,6 @@ dlcompare(list(p),pfuns,rects=FALSE,row.items="posfuns")
 ## Interesting --- qp.last almost works here, but actually we are
 ## getting the bounding boxes in the wrong viewport -> wrong size.
 dlcompare(list(p,p2),pfuns[1:2],rects=FALSE,debug=TRUE)
+
+lattice.options(oldopt)
 }

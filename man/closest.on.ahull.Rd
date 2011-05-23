@@ -7,14 +7,10 @@ aspect="iso" TODO: check and correct for perspective changes.)
 TODO: doesn't work with ggplot2 since we can't calculate bounding
 box.}
 \usage{
-closest.on.ahull(d, debug = FALSE, center.fun = big.boxes, ...)
+closest.on.ahull(d, ...)
 }
 \arguments{
   \item{d}{
-}
-  \item{debug}{
-}
-  \item{center.fun}{
 }
   \item{\dots}{
 }

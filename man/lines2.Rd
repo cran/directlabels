@@ -1,7 +1,7 @@
 \name{lines2}
 \alias{lines2}
 \title{lines2}
-\description{Positioning Function for 2 groups of longitudinal data. One curve
+\description{Positioning Method for 2 groups of longitudinal data. One curve
 is on top of the other one (on average), so we label the top one
 at its maximal point, and the bottom one at its minimal
 point. Vertical justification is chosen to minimize collisions

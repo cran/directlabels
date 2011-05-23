@@ -1,6 +1,6 @@
-### Positioning Function for the top of a group of points.
+### Positioning Method for the top of a group of points.
 top.points <-
-  dl.indep(data.frame(d[which.max(d$y),],hjust=0.5,vjust=0))
+  gapply.fun(data.frame(d[which.max(d$y),],hjust=0.5,vjust=0))
 
 ### Label the tops, but bump labels up to avoid collisions.
 top.bumpup <- list(top.points,bumpup)
@@ -8,9 +8,9 @@ top.bumpup <- list(top.points,bumpup)
 ### Label the tops, bump labels up to avoid other labels, then to the
 ### side to avoid collisions with points.
 top.bumptwice <- function(d,debug=FALSE,...){
-  labtab <- eval.list(top.bumpup,d)
+  labtab <- apply.method(top.bumpup,d)
   if(debug)draw.rects(labtab)
-  ddply(labtab,.(groups),function(l){
+  gapply(labtab,function(l){
     x <- sort(c(range(d$x),subset(d,y>l$bottom&y<l$top)$x))
     if(length(x)==2)return(l)
     dif <- diff(x)

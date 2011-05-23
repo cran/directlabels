@@ -1,20 +1,62 @@
 TODO
 
-How to respect predefined scale_colour_manual() in ggplot2?
-http://stackoverflow.com/questions/3337765/can-i-use-direct-label-with-ggplots-scale-colour-manual
-I tried to do a hack that looks into p$scales$.scales to turn off the
-legend (r371), but that didn't work so well, so I went back to the
-method of just adding a new scale_colour_discrete(legend=FALSE) (r382)
-For now, just set the scale_colour_manual AFTER the call to direct.label():
-p <- ggplot(...)
-p2 <- direct.label(p)
-p2+scale_colour_manual(...)
-
 Need to figure out how to calculate label bounding boxes for ggplot2.
 
 closest.on.ahull calculation should take into account visual
 coordinates, not plotting coordinates (could run into problems if
 horiz and vert axes are on widely different scales).
+
+In fact all Positioning Methods which take into account visual
+distance need to calculate visual distance instead of plotting
+coordinate distance. ie smart.grid tries to find the label position
+which is closest to the center, but this can be very skewed if x and y
+axes are not on the same scale.
+
+Implement some mechanism which guarantees that only the columns
+returned by a Positioning Method will be updated in the data frame
+that will eventually be used to plot the labels. That way each
+individual Positioning Method doesn't have to worry about keeping
+track of all the weird annotation columns that can be there on input.
+
+1.3
+
+delete empty.grid.fun ... now to use empty.grid, do i.e.
+list("get.means","empty.grid") 
+for labels with target points at the means of each point cloud.
+
+ignore.na Positioning Method for removing rows with NA x or y. This is
+applied before all Positioning Methods in label.positions().
+
+no longer depend on ggplot2/proto for further modularity.
+
+gapply function for applying a Positioning Method to each group, also
+eliminates need to depend on plyr.
+
+dl.indep -> gapply.fun
+
+eval.list -> apply.method 
+
+path example datasets.
+
+redo ggplot2 backend --- analyze layers to determine which has the
+color.
+
+Respect predefined scale_colour_manual() in ggplot2:
+http://stackoverflow.com/questions/3337765/can-i-use-direct-label-with-ggplots-scale-colour-manual
+I tried to do a hack that looks into p$scales$.scales to turn off the
+legend (r371), but that didn't work so well, so I went back to the
+method of just adding a new scale_colour_discrete(legend=FALSE) (r382)
+You could always set the scale_colour_manual AFTER the call to direct.label():
+p <- ggplot(...)
+p2 <- direct.label(p)
+p2+scale_colour_manual(...,legend=FALSE)
+As of r400 I do analysis of the layers of the ggplot object, and turn off
+ the color legend off if there was one. Thus this should be equivalent:
+p <- ggplot(...)+
+  scale_colour_manual(...)
+direct.label(p)
+
+1.2 Positioning Function -> Positioning Method.
 
 1.1 26 nov 2010 delete many examples so CRAN check completes quicker.
 

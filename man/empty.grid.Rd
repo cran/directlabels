@@ -5,16 +5,13 @@
 placed in different places. A grid is drawn over the whole
 plot. Each cluster is considered in sequence and assigned to the
 point on this grid which is closest to the point given by
-loc.fun().}
+the input data points. Makes use of attr(d,"orig.data").}
 \usage{
-empty.grid(d, debug = FALSE, loc.fun = get.means, ...)
+empty.grid(d, debug = FALSE, ...)
 }
 \arguments{
-  \item{d}{Data frame of points on the scatterplot with columns groups x y.}
-  \item{debug}{Show debugging info on the plot? This is passed to loc.fun.}
-  \item{loc.fun}{Function that takes d and returns a data frame with 1 column for
-each group, giving the point we will use to look for a close point
-on the grid, to put the group label.}
+  \item{d}{Data frame of target points on the scatterplot for each label.}
+  \item{debug}{Show debugging info on the plot?}
   \item{\dots}{ignored.}
 }
 

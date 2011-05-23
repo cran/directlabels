@@ -1,7 +1,7 @@
 \name{bottom.points}
 \alias{bottom.points}
 \title{bottom points}
-\description{Positioning Function for the bottom of a group of points.}
+\description{Positioning Method for the bottom of a group of points.}
 \usage{
 bottom.points(d, ...)
 }

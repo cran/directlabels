@@ -6,11 +6,11 @@
 dl.combine(...)
 }
 \arguments{
-  \item{\dots}{Several Positioning Functions.}
+  \item{\dots}{Several Positioning Methods.}
 }
 
-\value{A Positioning Function that returns the combined data frame after
-applying each specified Positioning Function.}
+\value{A Positioning Method that returns the combined data frame after
+applying each specified Positioning Method.}
 
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>}
 
