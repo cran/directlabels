@@ -1,6 +1,6 @@
 dldoc <- function # Make directlabels documentation
-### Positioning Functions for direct labeling are supposed to work
-### with only certain plot types. Each Positioning Function is defined
+### Positioning Method for direct labeling are supposed to work
+### with only certain plot types. Each Positioning Method is defined
 ### in R/file.R and plot examples that it can be used in are found in
 ### tests/doc/file/*.R so that we can automatically assemble a
 ### database of example plots from the code.
@@ -17,7 +17,7 @@ dldoc <- function # Make directlabels documentation
   names(posfuns) <- docdirs
   plots <- lapply(plotfiles,lapply,extract.plot)
 
-  ## add crosslinks between positioning functions
+  ## add crosslinks between positioning method
   repfuns <- apply(cbind(lapply(posfuns,names),names(posfuns)),1,function(L){
     REP <- paste('<a href="../../',L[[2]],
                  '/posfuns/\\1.html">\\1</a>',sep='')
@@ -44,7 +44,7 @@ dldoc <- function # Make directlabels documentation
   ## matrix of all extracted data to process
   m <- cbind(plots,posfuns,type=names(plots))
 
-  makerd <- function # Make Rd positioning function description
+  makerd <- function # Make Rd positioning method description
   (L
    ## List of posfuns and plots to match up
    ){
@@ -76,7 +76,7 @@ dldoc <- function # Make directlabels documentation
   makehtml <- function # Make HTML documentation
   ## Make plots and HTML for documentation website.
   (L
-   ## List of positioning functions and plots to match up.
+   ## List of positioning method and plots to match up.
    ){
     ## all paths are relative to the docs directory
     subdir <- L$type
@@ -164,13 +164,14 @@ dldoc <- function # Make directlabels documentation
 
   m
 ### Matrix of lists describing example plots and matching builtin
-### Positioning Functions.
+### Positioning Methods.
 }
-extract.posfun <- function # Extract Positioning Function for documentation
+
+extract.posfun <- function # Extract Positioning Method for documentation
 ### Use inlinedocs to extract comments and definitions from code, then
 ### for each item found add the value and its name to the list.
 (f
-### R code file, which should contain only Positioning Functions that
+### R code file, which should contain only Positioning Methods that
 ### can be used with examples defined in the doc/ subdirectory with
 ### the same name.
  ){
@@ -188,9 +189,10 @@ extract.posfun <- function # Extract Positioning Function for documentation
   ## otherwise if one function's name is a substring of another's!
   ##L <- L[order(nchar(names(L)),decreasing=TRUE)]
   L
-### List of lists, each of which describes one Positioning Function
+### List of lists, each of which describes one Positioning Method
 ### defined in f.
 }
+
 extract.plot <- function # Extract plot and definition for documentation
 ### Given an R code file, execute it, store the definition, and save
 ### the resulting plot in a variable.
@@ -209,6 +211,7 @@ extract.plot <- function # Extract plot and definition for documentation
        plot=e$p,
        name=sub(".R$","",basename(f)))
 }
+
 rhtmlescape <- function
 ### for standards compliance we should escape <>&
 (code

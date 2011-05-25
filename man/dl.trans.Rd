@@ -20,7 +20,7 @@ dl.trans(...)
 
 \examples{
 complicated <- list(dl.trans(x=x+10),
-                    dl.indep(d[-2,]),
+                    gapply.fun(d[-2,]),
                     rot=c(30,180))
 library(lattice)
 direct.label(dotplot(VADeaths,type="o"),complicated,TRUE)

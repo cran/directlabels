@@ -6,8 +6,8 @@ label.endpoints <- function
  hjust
 ### hjust of the labels.
  ){
-  function(d,...)ddply(d,.(groups),function(d,...){
-    i <- FUN(d$x)
+  function(d,...)gapply(d,function(d,...){
+    i <- FUN(d$x)==d$x
     if(length(i))data.frame(d[i,],hjust,vjust=0.5)
     else data.frame()
   })
@@ -17,11 +17,11 @@ label.endpoints <- function
 dl.combine <- structure(function # Combine output of several methods
 ### Apply several Positioning methods to the original data frame.
 (...
-### Several Positioning Functions.
+### Several Positioning Methods.
  ){
   FUNS <- list(...)
   pf <- function(d,...){
-    dfs <- lapply(FUNS,eval.list,d)
+    dfs <- lapply(FUNS,apply.method,d)
     res <- data.frame()
     for(df in dfs){
       if(nrow(res))res <- merge(df,res,all=TRUE)
@@ -30,8 +30,8 @@ dl.combine <- structure(function # Combine output of several methods
     res
   }
   pf
-### A Positioning Function that returns the combined data frame after
-### applying each specified Positioning Function.
+### A Positioning Method that returns the combined data frame after
+### applying each specified Positioning Method.
 },ex=function(){
   ## Simple example: label the start and endpoints
   data(BodyWeight,package="nlme")
@@ -130,22 +130,24 @@ dl.combine <- structure(function # Combine output of several methods
   plot(direct.label(P,dl.combine(lasso.labels,last.qp)))
 })
 
-dl.indep <- structure(function # Direct label groups independently
+gapply.fun <- structure(function # Direct label groups independently
 ### Makes a function you can use to specify the location of each group
 ### independently.
-(expr
+(expr,
 ### Expression that takes a subset of the d data frame, with data from
 ### only a single group, and returns the direct label position.
+ ...
+### variables to store for access to code in expr.
  ){
   foo <- substitute(expr)
   f <- function(d,...)eval(foo)
-  src <- paste("dl.indep(",paste(deparse(foo),collapse="\n"),")",sep="")
-  pf <- structure(function(d,...)ddply(d,.(groups),f,...),"source"=src)
+  src <- paste("gapply.fun(",paste(deparse(foo),collapse="\n"),")",sep="")
+  pf <- structure(function(d,...)gapply(d,f,...),"source"=src)
   pf
 ### A Positioning Function.
 },ex=function(){
   complicated <- list(dl.trans(x=x+10),
-                      dl.indep(d[-2,]),
+                      gapply.fun(d[-2,]),
                       rot=c(30,180))
   library(lattice)
   direct.label(dotplot(VADeaths,type="o"),complicated,TRUE)
@@ -164,7 +166,7 @@ dl.trans <- structure(function # Direct label data transform
 ### A Positioning Function.
 },ex=function(){
   complicated <- list(dl.trans(x=x+10),
-                      dl.indep(d[-2,]),
+                      gapply.fun(d[-2,]),
                       rot=c(30,180))
   library(lattice)
   direct.label(dotplot(VADeaths,type="o"),complicated,TRUE)
@@ -219,16 +221,11 @@ dl.move <- structure(function # Manually move a direct label
     `+dl.move`=list(last.points,dl.move("KIF11",-0.9,hjust=1,vjust=1))))
 })
 
-### Make a Positioning Function with empty.grid, that calculates label
-### position targets using f.
-empty.grid.fun <- function(f)
-  function(d,debug,...)empty.grid(d,debug,f)
-
 ### Jitter the label positions.
 dl.jitter <- dl.trans(x=jitter(x),y=jitter(y))
 
 ### Calculate boxes around labels, for collision detection.
-calc.boxes <- function(d,debug=FALSE,...){
+calc.boxes <- function(d,debug=FALSE,class="ggplot2",...){
   vp <- current.viewport()
   convert <- function(worh){
     conv <- get(paste("convert",worh,sep=""))
@@ -242,22 +239,31 @@ calc.boxes <- function(d,debug=FALSE,...){
       w
     }))
   }
-  w <- convert("Width")
-  h <- convert("Height")
+  if(class=="ggplot"){
+    warning("label bounding boxes are not accurate for ggplot2. ",
+            "direct labels may overlap!")
+  }
+  ## abs since we have a weird bug with ggplot2 sometimes
+  w <- abs(convert("Width"))
+  h <- abs(convert("Height"))
   calc.borders(transform(d,w=w,h=h))
 }
 
 ### Calculate big boxes around the means of each cluster.
-big.boxes <- function(d,...)enlarge.box(calc.boxes(visualcenter(d)))
+big.boxes <- list("get.means","calc.boxes","enlarge.box")
+
+### Point halfway between the min and max
+midrange <- function(x){
+  r <- range(x)
+  (r[2]-r[1])/2+r[1]
+}
 
 ### Point in the middle of the min and max for each group.
-visualcenter <-
-  dl.indep(unique(transform(d,x=diff(range(x))/2+min(x),
-                            y=diff(range(y))/2+min(y))))
+visualcenter <- gapply.fun(dl.summarize(d,x=midrange(x),y=midrange(y)))
 
 ### Positioning Function for the mean of each cluster of points.
 get.means <-
-  dl.indep(unique(transform(d,x=mean(x),y=mean(y))))
+  gapply.fun(dl.summarize(d,x=mean(x),y=mean(y)))
 
 calc.borders <- function
 ### Calculate bounding box based on newly calculated width and height.
@@ -328,8 +334,18 @@ bumpup <- function(d,...){
   d
 }
 
+### Remove rows for which either x or y is NA
+ignore.na <- function(d,...){
+  not.na <- is.finite(d$x)
+  if("y"%in% names(d)){
+    not.na <- not.na & is.finite(d$y)
+  }
+  d[not.na,]
+}
+
 ### Use a QP solver to find the best places to put the points on a
-### line, subject to the constraint that they should not overlap
+### line, subject to the constraint that they should not
+### overlap.
 qp.labels <- function(var,spacer)function(d,...){
   if(!spacer%in%names(d))stop("need to have calculated ",spacer)
   require(quadprog)
@@ -379,6 +395,19 @@ inside <- function
 ### Vector of point counts for each box.
 }
 
+dl.summarize <- function
+### summarize which preserves important columns for direct labels.
+(d,
+### data frame
+ ...
+ ){
+  df <- unique(transform(d,...))
+  to.copy <- names(d)[!names(d)%in%names(df)]
+  for(N in to.copy)
+    df[,N] <- d[,N]
+  df
+}
+
 perpendicular.lines <- function
 ### Draw a line between the centers of each cluster, then draw a
 ### perpendicular line for each cluster that goes through its
@@ -392,6 +421,7 @@ perpendicular.lines <- function
  ...
 ### ignored.
  ){
+  if(length(unique(d$groups))==1)return(extreme.points(d))
   means <- rename(get.means(d),list(x="mx",y="my",groups="groups"))
   big <- merge(d,means,by="groups")
   fit <- lm(my~mx,means)
@@ -403,14 +433,14 @@ perpendicular.lines <- function
                     d=sqrt((x-x1)^2+(y-y1)^2),
                     dm=sqrt((x-mx)^2+(y-my)^2))
   big5 <- transform(big4,ratio=d/dm)
-  winners <- ddply(big5,.(groups),subset,
+  winners <- gapply(big5,subset,
                    subset=seq_along(ratio)==which.min(ratio))
   ## gives back a function of a line that goes through the designated center
   f <- function(v)function(x){
     r <- means[means$groups==v,]
     -1/m*(x-r$mx)+r$my
   }
-  ##dd <- ddply(means,.(groups),summarise,x=x+sdx*seq(0,-2,l=5)[-1])
+  ##dd <- gapply(means,summarise,x=x+sdx*seq(0,-2,l=5)[-1])
   ##dd$y <- mdply(dd,function(groups,x)f(groups)(x))$x
   if(debug){
     ## myline draws a line over the range of the data for a given fun F
@@ -426,25 +456,53 @@ perpendicular.lines <- function
 ### which is the furthest out along the line drawn through its center.
 }
 
-### Label the points furthest from the origin for each group.
-extreme.points <- dl.indep({
-  d <- transform(d,d=sqrt(x^2+y^2))
-  d[which.max(d$d),]
-})
+gapply <- function
+### apply a Positioning Method to every group. works like ddply from
+### plyr package, but the grouping column is always called groups, and
+### the Positioning Method is not necessarily a function (but can be).
+(d,
+### data frame with column groups.
+ method,
+### Positioning Method to apply to every group separately.
+ ...
+### additional arguments for FUN.
+ ){
+  stopifnot(is.data.frame(d))
+  d$groups <- factor(d$groups)
+  dfs <- lapply(levels(d$groups),function(g)d[d$groups==g,])
+  f <- function(d,...){
+    res <- apply.method(method,d,...)
+    res$groups <- d$groups[1]
+    res
+  }
+  results <- lapply(dfs,f,...)
+  if(any(!sapply(results,is.data.frame))){
+    print(results)
+    stop("Positioning Method did not return data.frame")
+  }
+  do.call(rbind,results)
+### data frame of results after applying FUN to each group in d.
+}
+
+### Label the points furthest from the middle for each group.
+extreme.points <- function(d,...){
+  d$dist.from.center <- sqrt((d$x-midrange(d$x))^2+(d$y-midrange(d$y))^2)
+  gapply(d,function(d)d[which.max(d$dist.from.center),])
+}
 
 edges.to.outside <- function
 ### Given a list of edges from the convex or alpha hull, and a list of
 ### cluster centers, calculate a point near to each cluster on the
 ### outside of the hull.
-(edges,centers,debug=FALSE){
+(edges,centers,debug=FALSE,...){
   if(debug){
     with(centers,lpoints(x,y,pch="+"))
     with(edges,lsegments(x1,y1,x2,y2))
   }
-  closepts <- ddply(centers,.(groups),project.onto.segments,edges,debug)
+  closepts <- gapply(centers,project.onto.segments,edges,debug)
   closepts$vjust <- ifelse(closepts$y-centers$y>0,0,1)
   closepts$hjust <- ifelse(closepts$x-centers$x>0,0,1)
-  r <- big.boxes(closepts)
+  r <- apply.method("big.boxes",closepts)
   transform(r,x=(right-left)/2+left,y=(top-bottom)/2+bottom,hjust=0.5,vjust=0.5)
 }
 
@@ -480,7 +538,70 @@ project.onto.segments <- function
   h
 }
 
-### Make a Positioning Method from a set of points on a vertical line
-### that will be spaced out using qp.labels
-vertical.qp <- function(M)list(M,calc.boxes,qp.labels("y","h"))
+### Make a Positioning Function from a set of points on a vertical
+### line that will be spaced out using qp.labels
+vertical.qp <- function(M)list(M,"calc.boxes",qp.labels("y","h"))
 
+### Calculate the default alpha parameter for ashape based on the
+### average size of label boxes.
+default.ahull <- function(d,...){
+  labels <- apply.method("big.boxes",d,...)
+  mean(unlist(labels[,c("w","h")]))/2
+}
+
+### Calculate the points on the ashape.
+ahull.points <- function(d,ahull=default.ahull(d)){
+  require(alphahull)
+  xy <- unique(d[,c("x","y")])
+  as <- ashape(xy,alpha=ahull)
+  as.data.frame(as$edges)
+}
+
+### Calculate the points on the convex hull.
+chull.points <- function(d,...){
+  bpts <- d[with(d,chull(x,y)),]
+  transform(data.frame(i1=1:nrow(bpts),i2=c(2:nrow(bpts),1)),
+            x1=bpts$x[i1],
+            y1=bpts$y[i1],
+            x2=bpts$x[i2],
+            y2=bpts$y[i2])
+}
+
+follow.points <- function
+### Draws a line between each center and every point, then follows the
+### line out far enough to give a box outside the cloud. Out of all
+### the boxes constructed in this way that do not contain any points,
+### take the one which has the smallest distance to the center. FIXME:
+### does not work with ggplot2 since the ggplot2 backend doesn't yet
+### have support of actually knowing how big the text bounding box is.
+(d,debug=FALSE,...){
+  allm <- apply.method(list("dl.jitter","big.boxes"),d)
+  if(debug)draw.rects(allm)
+  labtab <- data.frame()
+  for(g in levels(d$groups)){
+    x <- d
+    m <- subset(allm,groups==g)
+    x$a <- x$y - m$y
+    x$b <- x$x - m$x
+    x$h <- sqrt(x$a^2+x$b^2) ## hypotenuse of triangle, not box height!
+    x$x <- x$x + m$w/2 * x$b/x$h *1.01 ## b/h = cos(theta)
+    x$y <- x$y + m$h/2 * x$a/x$h *1.01 ## a/h = sin(theta)
+    x$dist <- (x$x-m$x)^2+(x$y-m$y)^2
+    x <- transform(x,
+                   left=x-m$w/2,right=x+m$w/2,
+                   top=y+m$h/2,bottom=y-m$h/2)
+    x$points <- inside(x,d)
+    ## consider only subset of boxes that contain no points
+    x <- subset(x,points==0)
+    ## take the box with the minimal distance
+    x <- subset(x,dist==min(dist))[1,]
+    labtab <- rbind(labtab,transform(x,x=x,y=y,groups=g))
+    ## add the box's 4 points to the list of points
+    newpoints <- d[1:4,]
+    newpoints$x <- c(x$left,x$right,x$right,x$left)
+    newpoints$groups <- g
+    newpoints$y <- c(x$top,x$top,x$bottom,x$bottom)
+    d <- rbind(d,newpoints)
+  }
+  labtab
+}

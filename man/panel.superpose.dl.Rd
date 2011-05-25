@@ -15,7 +15,7 @@ panel.superpose.dl(x, y = NULL, subscripts, groups, panel.groups, method = NULL,
   \item{panel.groups}{To be parsed for default labeling method, and passed to
 panel.superpose.}
   \item{method}{Method for direct labeling as described in ?label.positions. NULL
-indicates to choose a Positioning Function based on the
+indicates to choose a Positioning Method based on the
 panel.groups function.}
   \item{.panel.superpose}{The panel function to use for drawing data points.}
   \item{type}{Plot type, used for default method dispatch.}
@@ -85,7 +85,7 @@ panel.model <- function(x,subscripts,col.line,...){
 pg <- ratxy(panel=panel.superpose,panel.groups=panel.model)
 print(pg)
 ## If you use panel.superpose.dl with a custom panel.groups function,
-## you need to manually specify the Positioning Function, since the
+## you need to manually specify the Positioning Method, since the
 ## name of panel.groups is used to infer a default:
 print(direct.label(pg,method=first.points))
 print(ratxy(panel=panel.superpose.dl,panel.groups="panel.model",

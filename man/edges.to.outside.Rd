@@ -5,7 +5,7 @@
 cluster centers, calculate a point near to each cluster on the
 outside of the hull.}
 \usage{
-edges.to.outside(edges, centers, debug = FALSE)
+edges.to.outside(edges, centers, debug = FALSE, ...)
 }
 \arguments{
   \item{edges}{
@@ -13,6 +13,8 @@ edges.to.outside(edges, centers, debug = FALSE)
   \item{centers}{
 }
   \item{debug}{
+}
+  \item{\dots}{
 }
 }
 

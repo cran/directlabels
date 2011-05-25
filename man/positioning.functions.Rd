@@ -59,6 +59,7 @@ p <- densityplot(~gcsescore|gender,Chem97,
             n=500,plot.points=FALSE)
 },
 {
+library(reshape)
 iris2 <- melt(iris,id="Species")
 library(lattice)
 p <- densityplot(~value|variable,iris2,groups=Species,scales="free")
@@ -142,10 +143,10 @@ p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
        xlab=expression(df(lambda)))
 },
 {
+library(ggplot2)
 dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
 ddf <- melt(as.data.frame(dts),id="time")
 names(ddf) <- c("time","sex","deaths")
-library(ggplot2)
 p <- qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-5,77)
 })){
   print(direct.label(p,"first.bumpup"))
@@ -189,13 +190,21 @@ library(ggplot2)
 data(mpg,package="ggplot2")
 p <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
       main="Fuel efficiency depends on car size")
+},
+{
+data(normal.l2.cluster,package="directlabels")
+library(ggplot2)
+p <- ggplot(normal.l2.cluster$path,aes(x,y))+
+  geom_path(aes(group=row),colour="grey")+
+  geom_point(aes(size=lambda),colour="grey")+
+  geom_point(aes(colour=class),data=normal.l2.cluster$pts,pch=21,fill="white")+
+  coord_equal()
 })){
   print(direct.label(p,"closest.on.ahull"))
   print(direct.label(p,"closest.on.chull"))
   print(direct.label(p,"empty.grid"))
-  print(direct.label(p,"empty.grid.2"))
   print(direct.label(p,"extreme.grid"))
-  print(direct.label(p,"follow.points"))
+  print(direct.label(p,"perpendicular.grid"))
   print(direct.label(p,"smart.grid"))
 }
 

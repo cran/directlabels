@@ -9,8 +9,9 @@ uselegend.trellis <- function
   else p
 }
  
-### Functions which need translation before applying Positioning Function.
+### Functions which need translation before applying Positioning Method.
 need.trans <- c("qqmath","densityplot")
+
 dl.text <- function
 ### To be used as panel.groups= argument in panel.superpose. Analyzes
 ### arguments to determine correct text color for this group, and then
@@ -87,7 +88,7 @@ panel.superpose.dl <- structure(function
 ### panel.superpose.
  method=NULL,
 ### Method for direct labeling as described in ?label.positions. NULL
-### indicates to choose a Positioning Function based on the
+### indicates to choose a Positioning Method based on the
 ### panel.groups function.
  .panel.superpose=panel.superpose,
 ### The panel function to use for drawing data points.
@@ -110,12 +111,12 @@ panel.superpose.dl <- structure(function
   if(is.null(method))method <- default.picker("trellis")
   ## maybe eventually allow need.trans to be specified in options()??
   if(lattice.fun.name%in%need.trans)method <-
-    c(paste("trans.",lattice.fun.name,sep=""),method)
+    list(paste("trans.",lattice.fun.name,sep=""),method)
   groups <- as.factor(groups)
   groups <- groups[subscripts]
   d <- data.frame(x,groups)
   if(!missing(y))d$y <- y
-  labs <- label.positions(d,method,...)
+  labs <- label.positions(d,method,class="lattice",...)
   type <- type[type!="g"] ## printing the grid twice looks bad.
   panel.superpose(panel.groups=dl.text,labs=labs,type=type,x=x,
                        groups=groups,subscripts=seq_along(groups),...)
@@ -175,7 +176,7 @@ panel.superpose.dl <- structure(function
   pg <- ratxy(panel=panel.superpose,panel.groups=panel.model)
   print(pg)
   ## If you use panel.superpose.dl with a custom panel.groups function,
-  ## you need to manually specify the Positioning Function, since the
+  ## you need to manually specify the Positioning Method, since the
   ## name of panel.groups is used to infer a default:
   print(direct.label(pg,method=first.points))
   print(ratxy(panel=panel.superpose.dl,panel.groups="panel.model",
@@ -205,13 +206,21 @@ panel.superpose.dl <- structure(function
 })
 
 defaultpf.trellis <- function
-### If no Positioning Function specified, choose a default using this
+### If no Positioning Method specified, choose a default using this
 ### function. The idea is that this is called with all the variables
 ### in the environment of panel.superpose.dl, and this can be
 ### user-customizable by setting the directlabels.defaultpf.lattice
 ### option to a function like this.
 (lattice.fun.name,groups,type,...){
-  ldefault <- function()if(nlevels(groups)==2)"lines2" else "maxvar.qp"
+  ldefault <- function(){
+    if(nlevels(groups)==2)"lines2" else {
+      if(require(quadprog))"maxvar.qp"
+      else {
+        warning("install quadprog package for smarter labeling")
+        "maxvar.points"
+      }
+    }
+  }
   lattice.fun.name <-
     switch(lattice.fun.name,
            qqmath="xyplot",
