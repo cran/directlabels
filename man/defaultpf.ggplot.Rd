@@ -3,7 +3,9 @@
 \title{defaultpf ggplot}
 \description{Default method selection method for ggplot2 plots.}
 \usage{
-defaultpf.ggplot(geom, p, ...)
+defaultpf.ggplot(geom,
+p,
+...)
 }
 \arguments{
   \item{geom}{

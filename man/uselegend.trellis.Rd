@@ -3,7 +3,8 @@
 \title{uselegend trellis}
 \description{Add a legend to a trellis plot, for comparison.}
 \usage{
-uselegend.trellis(p, ...)
+uselegend.trellis(p,
+...)
 }
 \arguments{
   \item{p}{The trellis object.}

@@ -5,7 +5,10 @@
 Positioning Function. This function can be used to manually place
 that label in a good spot.}
 \usage{
-dl.move(group, x, y, ...)
+dl.move(group,
+x,
+y,
+...)
 }
 \arguments{
   \item{group}{Group to change.}
@@ -29,7 +32,6 @@ scatter <- xyplot(jitter(cty)~jitter(hwy),mpg,groups=class,aspect=1)
 dlcompare(list(scatter),
           list("extreme.grid",
                `+dl.move`=list(extreme.grid,dl.move("suv",15,15))))
-
 data(svmtrain,package="directlabels")
 library(ggplot2)
 p <- qplot(log10(gamma),rate,data=svmtrain,group=data,colour=data,

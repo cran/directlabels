@@ -4,7 +4,10 @@
 \description{Given a point and a set of line segments representing a convex or
 alpha hull, calculate the closest point on the segments.}
 \usage{
-project.onto.segments(m, hull.segments, debug = FALSE)
+project.onto.segments(m,
+hull.segments,
+debug = FALSE,
+...)
 }
 \arguments{
   \item{m}{m is 1 row, a center of a point cloud, we need to find the
@@ -14,6 +17,7 @@ hull.}
 hull.}
   \item{debug}{
 }
+  \item{\dots}{ignored}
 }
 
 

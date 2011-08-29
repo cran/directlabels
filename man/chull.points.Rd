@@ -3,7 +3,8 @@
 \title{chull points}
 \description{Calculate the points on the convex hull.}
 \usage{
-chull.points(d, ...)
+chull.points(d,
+...)
 }
 \arguments{
   \item{d}{

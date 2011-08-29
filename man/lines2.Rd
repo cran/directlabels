@@ -9,7 +9,9 @@ with the other line. This may not work so well for data with high
 variability, but then again lineplots may not be the best for
 these data either.}
 \usage{
-lines2(d, offset = 0.3, ...)
+lines2(d,
+offset = 0.3,
+...)
 }
 \arguments{
   \item{d}{The data.}

@@ -3,7 +3,8 @@
 \title{dl jitter}
 \description{Jitter the label positions.}
 \usage{
-dl.jitter(d, ...)
+dl.jitter(d,
+...)
 }
 \arguments{
   \item{d}{

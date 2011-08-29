@@ -3,7 +3,8 @@
 \title{inside}
 \description{Calculate for each box how many points are inside.}
 \usage{
-inside(boxes, points)
+inside(boxes,
+points)
 }
 \arguments{
   \item{boxes}{Data frame of box descriptions, each row is 1 box, need columns

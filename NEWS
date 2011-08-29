@@ -1,22 +1,38 @@
 TODO
 
-Need to figure out how to calculate label bounding boxes for ggplot2.
-
-closest.on.ahull calculation should take into account visual
-coordinates, not plotting coordinates (could run into problems if
-horiz and vert axes are on widely different scales).
-
-In fact all Positioning Methods which take into account visual
-distance need to calculate visual distance instead of plotting
-coordinate distance. ie smart.grid tries to find the label position
-which is closest to the center, but this can be very skewed if x and y
-axes are not on the same scale.
-
 Implement some mechanism which guarantees that only the columns
 returned by a Positioning Method will be updated in the data frame
 that will eventually be used to plot the labels. That way each
 individual Positioning Method doesn't have to worry about keeping
 track of all the weird annotation columns that can be there on input.
+
+2.0
+
+dl.move and static.labels allow specification of label positions in
+terms of the displayed axes! Internally, they convert the
+user-specified numbers to cm.
+
+Figured out how to calculate label bounding boxes for ggplot2, by
+returning dlgrobs from the draw() method of the new
+GeomDirectLabel. The special drawDetails.dlgrob method is called
+within the plotting viewport, so we can calculate the bounding boxes
+of the text before they are drawn.
+
+In fact all Positioning Methods which take into account visual
+distance need to calculate visual distance instead of plotting
+coordinate distance. ie smart.grid tries to find the label position
+which is closest to the center, but this can be very skewed if x and y
+axes are not on the same scale. This is now fixed since all
+coordinates are converted to cm before being passed to Positioning
+Methods.
+
+fontface and fontfamily for direct labels are now supported even on
+ggplot2, thanks to the new dlgrob backends! See example(dlcompare).
+
+1.4
+
+if(require(pkg)) in examples so you can see the rest even if you don't
+have pkg
 
 1.3
 

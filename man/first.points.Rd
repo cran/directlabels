@@ -3,7 +3,8 @@
 \title{first points}
 \description{Positioning Method for the first of a group of points.}
 \usage{
-first.points(d, ...)
+first.points(d,
+...)
 }
 \arguments{
   \item{d}{

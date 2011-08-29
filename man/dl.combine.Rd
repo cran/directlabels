@@ -22,13 +22,14 @@ applying each specified Positioning Method.}
 data(BodyWeight,package="nlme")
 library(lattice)
 ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
-plot(direct.label(ratplot,dl.combine(first.points,last.points)))
-## can also do this by repeatedly calling direct.label (ugly)
-plot(direct.label(direct.label(ratplot,last.points),first.points))
+both <- dl.combine("first.points","last.points")
+plot(direct.label(ratplot,"both"))
+## can also do this by repeatedly calling direct.label 
+plot(direct.label(direct.label(ratplot,"last.points"),"first.points"))
 library(ggplot2)
 rp2 <- qplot(Time,weight,data=BodyWeight,geom="line",facets=.~Diet,colour=Rat)
-print(direct.label(direct.label(rp2,last.points),first.points))
-
+print(direct.label(direct.label(rp2,"last.points"),"first.points"))
+print(direct.label(rp2,"both"))
 mylars <- function
 ## Least angle regression algorithm for calculating lasso solutions.
 (x,
@@ -63,7 +64,6 @@ mylars <- function
                                 alpha=alpha.total,
                                 arclength=sum(abs(b)),
                                 coef.unscaled=b/attr(xscale,"scaled:scale")))
-
     if(sum(abs(intercept)) < epsilon)#corr==0 so we are done
       return(transform(out,s=arclength/max(arclength)))
     
@@ -98,19 +98,25 @@ mylars <- function
     else c(j,which(nextvar==colnames(x)))
   }
 }
-
-## Calculate lasso path
-data(prostate,package="ElemStatLearn")
-pros <- subset(prostate,select=-train,train==TRUE)
-ycol <- which(names(pros)=="lpsa")
-x <- as.matrix(pros[-ycol])
-y <- unlist(pros[ycol])
-res <- mylars(x,y)
-P <- xyplot(coef~arclength,res,groups=variable,type="l")
-plot(direct.label(P,dl.combine(lasso.labels,last.qp)))
-
-data(diabetes,package="lars")
-dres <- with(diabetes,mylars(x,y))
-P <- xyplot(coef~arclength,dres,groups=variable,type="l")
-plot(direct.label(P,dl.combine(lasso.labels,last.qp)))
+## Calculate lasso path, plot and label
+mylasso <- dl.combine(lasso.labels,last.qp)
+if(require(ElemStatLearn)){
+  data(prostate)
+  pros <- subset(prostate,select=-train,train==TRUE)
+  ycol <- which(names(pros)=="lpsa")
+  x <- as.matrix(pros[-ycol])
+  y <- unlist(pros[ycol])
+  res <- mylars(x,y)
+  P <- xyplot(coef~arclength,res,groups=variable,type="l")
+  plot(direct.label(P,"mylasso"))
+  p <- ggplot(res,aes(arclength,coef,colour=variable))+
+    geom_line(aes(group=variable))
+  direct.label(p,"mylasso")
+}
+if(require(lars)){
+  data(diabetes)
+  dres <- with(diabetes,mylars(x,y))
+  P <- xyplot(coef~arclength,dres,groups=variable,type="l")
+  plot(direct.label(P,"mylasso"))
+}
 }

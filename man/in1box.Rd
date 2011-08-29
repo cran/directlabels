@@ -3,7 +3,8 @@
 \title{in1box}
 \description{Calculate how many points fall in a box.}
 \usage{
-in1box(p, box)
+in1box(p,
+box)
 }
 \arguments{
   \item{p}{
