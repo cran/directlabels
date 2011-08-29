@@ -3,7 +3,8 @@
 \title{extreme points}
 \description{Label the points furthest from the middle for each group.}
 \usage{
-extreme.points(d, ...)
+extreme.points(d,
+...)
 }
 \arguments{
   \item{d}{

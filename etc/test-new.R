@@ -1,0 +1,8 @@
+vad <- as.data.frame.table(VADeaths)
+names(vad) <- c("age","demographic","deaths")
+ggplot(vad,aes(deaths,age))+geom_line(aes(group=demographic,colour=demographic))+geom_dl(aes(groups=demographic,colour=demographic),method="top.qp")+scale_colour_discrete(legend=FALSE)
+ggplot(vad,aes(deaths,age))+geom_line(aes(group=demographic))+geom_dl(aes(groups=demographic),method="top.qp")
+data(BodyWeight,package="nlme")
+ggplot(BodyWeight,aes(Time,weight))+geom_line(aes(group=Rat))+facet_grid(~Diet)+geom_dl(aes(groups=Rat),method="last.qp")
+ggplot(BodyWeight,aes(Time,weight))+geom_line(aes(group=Rat,colour=Rat))+facet_grid(~Diet)+geom_dl(aes(groups=Rat,colour=Rat),method="last.qp")+scale_colour_discrete(legend=FALSE)
+ggplot(BodyWeight,aes(Time,weight))+geom_line(aes(group=Rat,colour=Rat))+facet_grid(~Diet)+geom_dl(aes(groups=Rat,colour=Rat),method=list("last.qp","draw.rects"))+scale_colour_discrete(legend=FALSE)+theme_bw()

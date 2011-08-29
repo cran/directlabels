@@ -1,6 +1,5 @@
 ### Positioning Method for the top of a group of points.
-top.points <- top.points
+top.pieces <- label.pieces(which.max,0)
 
 ### Positioning Method for the bottom of a group of points.
-bottom.points <-
-  gapply.fun(data.frame(d[which.min(d$y),],hjust=0.5,vjust=1))
+bottom.pieces <- label.pieces(which.min,1)

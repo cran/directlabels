@@ -1,3 +1,19 @@
+### Label points at the zero before the first nonzero y value.
+lasso.labels <-
+  list(rot=60,
+       gapply.fun({ ## figure out where the path hits 0
+         d <- d[order(d$x),]
+         zero <- d$y[1]
+         i <- which(d$y!=zero)[1]
+         just <- as.integer(d[i,"y"]>zero)
+         transform(d[i-1,],hjust=just,vjust=just)
+       }),
+       "calc.boxes",
+       ## calculate how wide the tilted box is
+       dl.trans(hyp=h/sin(2*pi*rot/360)),
+       ## avoid collisions between tilted boxes
+       qp.labels("x","hyp"))
+
 ### Positioning Method for the first of a group of points.
 first.points <- label.endpoints(min,1)
 
@@ -53,7 +69,7 @@ lines2 <- function
   top <- 0-offset
   bottom <- 1+offset
   y <- gapply(d,get.means)
-  gapply(y,function(D){
+  gapply(y,function(D,...){
     bigger.on.average <- D$y==max(y$y)
     f <- if(bigger.on.average)max else min
     compare <- get(if(bigger.on.average)">" else "<")
@@ -70,6 +86,6 @@ lines2 <- function
     ld <- ld[ld$y==f(ld$y),]
     which.closest <- which.max(ld$diff)
     pos <- ld[which.closest,]
-    data.frame(pos,vjust=if(bigger.on.average)top else bottom)
+    transform(pos,vjust=if(bigger.on.average)top else bottom)
   })
 }

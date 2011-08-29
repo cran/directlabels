@@ -2,7 +2,7 @@
 \alias{extreme.grid}
 \docType{data}
 \title{extreme grid}
-\description{Use empty.grid with extreme.points.}
+\description{Label each point cloud near the extremities of the plot region.}
 \usage{extreme.grid}
 
 

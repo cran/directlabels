@@ -3,7 +3,8 @@
 \title{last points}
 \description{Positioning Method for the last of a group of points.}
 \usage{
-last.points(d, ...)
+last.points(d,
+...)
 }
 \arguments{
   \item{d}{

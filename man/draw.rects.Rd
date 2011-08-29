@@ -5,7 +5,8 @@
 to have previously called calc.boxes. Does not edit the data
 frame.}
 \usage{
-draw.rects(d, ...)
+draw.rects(d,
+...)
 }
 \arguments{
   \item{d}{

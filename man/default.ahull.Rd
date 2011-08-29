@@ -4,7 +4,8 @@
 \description{Calculate the default alpha parameter for ashape based on the
 average size of label boxes.}
 \usage{
-default.ahull(d, ...)
+default.ahull(d,
+...)
 }
 \arguments{
   \item{d}{

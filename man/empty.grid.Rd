@@ -7,7 +7,9 @@ plot. Each cluster is considered in sequence and assigned to the
 point on this grid which is closest to the point given by
 the input data points. Makes use of attr(d,"orig.data").}
 \usage{
-empty.grid(d, debug = FALSE, ...)
+empty.grid(d,
+debug = FALSE,
+...)
 }
 \arguments{
   \item{d}{Data frame of target points on the scatterplot for each label.}

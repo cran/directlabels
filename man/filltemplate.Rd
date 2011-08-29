@@ -4,7 +4,8 @@
 \description{Fill in occurances of OBJ$item in the file template with the value
 in R of L$item.}
 \usage{
-filltemplate(L, template)
+filltemplate(L,
+template)
 }
 \arguments{
   \item{L}{

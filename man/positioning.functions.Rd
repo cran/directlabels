@@ -46,8 +46,8 @@ library(ggplot2)
 p <- ggplot(volcano3d, aes(x, y, z = z))+
   stat_contour(aes(colour = ..level..))
 })){
-  print(direct.label(p,"bottom.points"))
-  print(direct.label(p,"top.points"))
+  print(direct.label(p,"bottom.pieces"))
+  print(direct.label(p,"top.pieces"))
 }
 
 ### densityplot Positioning Methods
@@ -88,6 +88,7 @@ p <- qplot(deaths,age,data=vad,group=demographic,geom="line",colour=demographic)
   xlim(8,80)
 })){
   print(direct.label(p,"angled.endpoints"))
+  print(direct.label(p,"top.qp"))
 }
 
 ### lineplot Positioning Methods
@@ -108,6 +109,23 @@ data(Chem97,package="mlmRev")
 library(lattice)
 p <- qqmath(~gcsescore,Chem97,groups=gender,
        type=c("l","g"),f.value=ppoints(100))
+},
+{
+data(prostate,package="ElemStatLearn")
+pros <- subset(prostate,select=-train,train==TRUE)
+ycol <- which(names(pros)=="lpsa")
+x <- as.matrix(pros[-ycol])
+y <- pros[[ycol]]
+library(lars)
+fit <- lars(x,y,type="lasso")
+beta <- scale(coef(fit),FALSE,1/fit$normx)
+arclength <- rowSums(abs(beta))
+path <- data.frame(melt(beta),arclength)
+names(path)[1:3] <- c("step","variable","standardized.coef")
+p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
+  geom_line(aes(group=variable))+
+  opts(title="LASSO path for prostate cancer data calculated using the LARS")+
+  xlim(0,20)
 },
 {
 ## complicated ridge regression lineplot ex. fig 3.8 from Elements of
@@ -144,14 +162,17 @@ p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
 },
 {
 library(ggplot2)
-dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
-ddf <- melt(as.data.frame(dts),id="time")
-names(ddf) <- c("time","sex","deaths")
-p <- qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-5,77)
+tx <- time(mdeaths)
+Time <- ISOdate(floor(tx),round(tx%%1 * 12)+1,1,0,0,0)
+uk.lung <- rbind(data.frame(Time,sex="male",deaths=as.integer(mdeaths)),
+                 data.frame(Time,sex="female",deaths=as.integer(fdeaths)))
+p <- qplot(Time,deaths,data=uk.lung,colour=sex,geom="line")+
+  xlim(ISOdate(1973,9,1),ISOdate(1980,4,1))
 })){
   print(direct.label(p,"first.bumpup"))
   print(direct.label(p,"first.points"))
   print(direct.label(p,"first.qp"))
+  print(direct.label(p,"lasso.labels"))
   print(direct.label(p,"last.bumpup"))
   print(direct.label(p,"last.points"))
   print(direct.label(p,"last.qp"))
@@ -166,7 +187,10 @@ data(mpg,package="ggplot2")
 m <- lm(cty~displ,data=mpg)
 mpgf <- fortify(m,mpg)
 library(lattice)
-p <- xyplot(jitter(.resid)~jitter(.fitted)|manufacturer,mpgf,groups=class)
+library(latticeExtra)
+p <- xyplot(cty~hwy|manufacturer,mpgf,groups=class,aspect="iso",
+       main="City and highway fuel efficiency by car class and manufacturer")+
+  layer_(panel.abline(0,1,col="grey90"))
 },
 {
 data(mpg,package="ggplot2")
@@ -200,9 +224,8 @@ p <- ggplot(normal.l2.cluster$path,aes(x,y))+
   geom_point(aes(colour=class),data=normal.l2.cluster$pts,pch=21,fill="white")+
   coord_equal()
 })){
-  print(direct.label(p,"closest.on.ahull"))
-  print(direct.label(p,"closest.on.chull"))
-  print(direct.label(p,"empty.grid"))
+  print(direct.label(p,"ahull.grid"))
+  print(direct.label(p,"chull.grid"))
   print(direct.label(p,"extreme.grid"))
   print(direct.label(p,"perpendicular.grid"))
   print(direct.label(p,"smart.grid"))

@@ -3,7 +3,8 @@
 \title{maxvar points}
 \description{Do first or last, whichever has points most spread out.}
 \usage{
-maxvar.points(d, ...)
+maxvar.points(d,
+...)
 }
 \arguments{
   \item{d}{

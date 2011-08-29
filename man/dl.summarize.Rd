@@ -3,7 +3,8 @@
 \title{dl summarize}
 \description{summarize which preserves important columns for direct labels.}
 \usage{
-dl.summarize(d, ...)
+dl.summarize(d,
+...)
 }
 \arguments{
   \item{d}{data frame}

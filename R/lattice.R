@@ -9,42 +9,37 @@ uselegend.trellis <- function
   else p
 }
  
-### Functions which need translation before applying Positioning Method.
-need.trans <- c("qqmath","densityplot")
+### Some lattice plot functions do some magic in the background to
+### translate the data you give them into the data points that are
+### plotted onscreen. We have to replicate this magic in native
+### coordinate space before applying the Positioning Method in cm
+### space. These functions accomplish this translation.
+lattice.translators <- list(qqmath=function(d,distribution,f.value,qtype=7,...){
+  ## Transformation function for 1d qqmath plots. This is a copy-paste
+  ## from panel.qqmath. (total hack)
+  gapply(d,function(d,...){
+    x <- as.numeric(d$x)
+    distribution <- if (is.function(distribution)) 
+      distribution
+    else if (is.character(distribution)) 
+      get(distribution)
+    else eval(distribution)
+    nobs <- sum(!is.na(x))
+    if (is.null(f.value)) 
+      data.frame(x = distribution(ppoints(nobs)), y = sort(x))
+    else data.frame(x = distribution(
+                      if (is.numeric(f.value))f.value
+                      else f.value(nobs)),
+                    y = quantile(x,
+                      if (is.numeric(f.value))f.value
+                      else f.value(nobs),
+                      names = FALSE, type = qtype, na.rm = TRUE))
+  })
+},densityplot=gapply.fun({
+  dens <- density(d$x,na.rm=TRUE)
+  data.frame(x=dens$x,y=dens$y)
+}))
 
-dl.text <- function
-### To be used as panel.groups= argument in panel.superpose. Analyzes
-### arguments to determine correct text color for this group, and then
-### draws the direct label text.
-(labs,
-### table of labels and positions constructed by label.positions
- group.number,
-### which group we are currently plotting, according to levels(labs$groups)
- col.line=NULL,
-### line color
- col.points=NULL,
-### point color
- col=NULL,
-### general color
- col.symbol=NULL,
-### symbol color
- type=NULL,
-### plot type
- ...
-### ignored
- ){
-  ##debugging output:
-  ##print(cbind(col,col.line,col.points,col.symbol,type))
-  col.text <- switch(type,p=col.symbol,l=col.line,col.line)
-  g <- labs[levels(as.factor(labs$groups))[group.number]==labs$groups,]
-  if(nrow(g)==0)return()
-  grid.text(g$groups,g$x,g$y,
-            hjust=g$hjust,vjust=g$vjust,rot=g$rot,
-            gp=gpar(col=col.text,fontsize=g$fontsize,fontfamily=g$fontfamily,
-              fontface=g$fontface,lineheight=g$lineheight,cex=g$cex,
-              alpha=g$alpha),
-            default.units="native")
-}
 direct.label.trellis <- function
 ### Add direct labels to a grouped lattice plot. This works by parsing
 ### the trellis object returned by the high level plot function, and
@@ -71,6 +66,7 @@ direct.label.trellis <- function
   update(p,debug=debug)
 ### The lattice plot.
 }
+
 panel.superpose.dl <- structure(function
 ### Call panel.superpose for the data points and then for the direct
 ### labels. This is a proper lattice panel function that behaves much
@@ -94,8 +90,10 @@ panel.superpose.dl <- structure(function
 ### The panel function to use for drawing data points.
  type="p",
 ### Plot type, used for default method dispatch.
+ debug=FALSE,
+### passed to dlgrob.
  ...
-### Additional arguments to panel.superpose.
+### passed to real panel function, and to translator.
  ){
   rgs <- list(x=x,subscripts=subscripts,groups=groups,type=type,`...`=...)
   if(!missing(y))rgs$y <- y
@@ -109,17 +107,24 @@ panel.superpose.dl <- structure(function
     if(is.character(subs))sub("panel.","",subs) else ""
   if(is.null(type))type <- "NULL"
   if(is.null(method))method <- default.picker("trellis")
-  ## maybe eventually allow need.trans to be specified in options()??
-  if(lattice.fun.name%in%need.trans)method <-
-    list(paste("trans.",lattice.fun.name,sep=""),method)
   groups <- as.factor(groups)
   groups <- groups[subscripts]
   d <- data.frame(x,groups)
-  if(!missing(y))d$y <- y
-  labs <- label.positions(d,method,class="lattice",...)
+  d$y <- if(missing(y))NA else y
   type <- type[type!="g"] ## printing the grid twice looks bad.
-  panel.superpose(panel.groups=dl.text,labs=labs,type=type,x=x,
-                       groups=groups,subscripts=seq_along(groups),...)
+  col.text <-
+    switch(type,p="superpose.symbol",l="superpose.line","superpose.line")
+  tpar <- trellis.par.get()
+  key <- rep(tpar[[col.text]]$col,length.out=nlevels(d$groups))
+  names(key) <- levels(d$groups)
+  ## maybe eventually allow these to be specified in options()??
+  translator <- lattice.translators[[lattice.fun.name]]
+  if(!is.null(translator)){
+    d <- apply.method(translator,d,...)
+  }
+  d$colour <- key[as.character(d$groups)]
+  g <- dlgrob(d,method,debug=debug)
+  grid.draw(g)
 },ex=function(){
   loci <- data.frame(ppp=c(rbeta(800,10,10),rbeta(100,0.15,1),rbeta(100,1,0.15)),
                      type=factor(c(rep("NEU",800),rep("POS",100),rep("BAL",100))))
@@ -149,6 +154,7 @@ panel.superpose.dl <- structure(function
     xyplot(weight~Time|Diet,bw,groups=Rat,type="l",layout=c(3,1),...)
   }
   ## No custom panel functions:
+  ##regular <- ratxy(par.settings=simpleTheme(col=c("red","black")))
   regular <- ratxy()
   print(regular) ## normal lattice plot
   print(direct.label(regular)) ## with direct labels
@@ -178,9 +184,9 @@ panel.superpose.dl <- structure(function
   ## If you use panel.superpose.dl with a custom panel.groups function,
   ## you need to manually specify the Positioning Method, since the
   ## name of panel.groups is used to infer a default:
-  print(direct.label(pg,method=first.points))
+  print(direct.label(pg,method="first.qp"))
   print(ratxy(panel=panel.superpose.dl,panel.groups="panel.model",
-              method=first.points))
+              method="first.qp"))
 
   ## Custom panel function that draws a box around values:
   panel.line1 <- function(ps=panel.superpose){
@@ -200,9 +206,9 @@ panel.superpose.dl <- structure(function
   ## Lattice plot with custom panel and panel.groups functions:
   both <- ratxy(panel=panel.line1(),panel.groups="panel.model")
   print(both)
-  print(direct.label(both,method=first.points))
+  print(direct.label(both,method="first.qp"))
   print(ratxy(panel=panel.line1(panel.superpose.dl),
-              panel.groups=panel.model,method=first.points))
+              panel.groups=panel.model,method="first.qp"))
 })
 
 defaultpf.trellis <- function

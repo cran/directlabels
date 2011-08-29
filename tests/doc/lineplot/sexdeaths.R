@@ -1,5 +1,7 @@
 library(ggplot2)
-dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
-ddf <- melt(as.data.frame(dts),id="time")
-names(ddf) <- c("time","sex","deaths")
-qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-5,77)
+tx <- time(mdeaths)
+Time <- ISOdate(floor(tx),round(tx%%1 * 12)+1,1,0,0,0)
+uk.lung <- rbind(data.frame(Time,sex="male",deaths=as.integer(mdeaths)),
+                 data.frame(Time,sex="female",deaths=as.integer(fdeaths)))
+qplot(Time,deaths,data=uk.lung,colour=sex,geom="line")+
+  xlim(ISOdate(1973,9,1),ISOdate(1980,4,1))

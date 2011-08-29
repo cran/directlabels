@@ -1,11 +1,63 @@
+### Process data points using the Positioning Method and draw the
+### resulting direct labels. This is called for every panel with
+### direct labels, every time the plot window is resized.
+drawDetails.dlgrob <- function(x,recording){
+  ## calculate x and y position in cm --- by this time we should have
+  ## done any preprocessing necessary to convert 1d data to 2d data!
+  cm.data <- transform(x$data,
+                       x=convertX(unit(x,"native"),"cm",valueOnly=TRUE),
+                       y=convertY(unit(y,"native"),"cm",valueOnly=TRUE),
+                       groups=factor(groups))
+  ## save original levels for later in case Positioning Methods mess
+  ## them up.
+  levs <- unique(cm.data[,c("groups","colour")])
+  code <- as.character(cm.data$colour)
+  names(code) <- as.character(cm.data$groups)
+  ## apply ignore.na function -- these points are not plotted
+  cm.data <- ignore.na(cm.data)
+  cm.data <- apply.method(x$method,cm.data,
+                          debug=x$debug,axes2native=x$axes2native)
+  if(nrow(cm.data)==0)return()## empty data frames can cause many bugs
+  ## rearrange factors in case Positioning Methods messed up the
+  ## order:
+  cm.data$col <- code[as.character(cm.data$groups)]
+  ## defaults for grid parameter values:
+  defaults <- list(hjust=0.5,vjust=0.5,rot=0)
+  for(p in names(defaults)){
+    if(!p %in% names(cm.data))cm.data[,p] <- NA
+    cm.data[is.na(cm.data[,p]),p] <- defaults[[p]]
+  }
+  cm.data <- unique(cm.data)
+  gpargs <- c("cex","alpha","fontface","fontfamily","col")
+  gp <- do.call(gpar,cm.data[names(cm.data)%in%gpargs])
+  if(x$debug)print(cm.data)
+  with(cm.data,{
+    grid.text(groups,x,y,hjust=hjust,vjust=vjust,rot=rot,default.units="cm",
+              gp=gp)
+  })
+}
+
+dlgrob <- function
+### Make a grid grob that will draw direct labels.
+(data,
+### Data frame including points to plot in native coordinates.
+ method,
+### Positioning Method.
+ debug=FALSE,
+ axes2native=identity,
+ ...
+ ){
+  grob(data=data,method=method,debug=debug,axes2native=axes2native,
+       cl="dlgrob",...)
+}
+
 direct.label <- structure(function
 ### Add direct labels to a plot. This is a S3 generic and there are
 ### appropriate methods for "trellis" and "ggplot" objects.
 (p,
 ### The plot to which you would like to add direct labels.
  method=NULL,
-### The direct label placement method as described in
-### ?label.positions.
+### Positioning Method.
  debug=FALSE
 ### Show debug output?
  ){
@@ -19,7 +71,10 @@ direct.label <- structure(function
   ## direct label simple ggplot2 scatterplot
   scatter <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
                    main="Fuel efficiency depends on car size")
-  print(direct.label(scatter,list(extreme.grid,dl.move("suv",15,15))))
+  print(direct.label(scatter))
+  ## Use a different Positioning Method, and edit one of the label
+  ## positions by hand
+  print(direct.label(scatter,list("extreme.grid",dl.move("suv",15,15))))
 
   ## scatterplot in lattice
   m <- lm(cty~displ,data=mpg)
@@ -28,41 +83,42 @@ direct.label <- structure(function
   oldopt <- lattice.options(panel.error=NULL)
   mpg.scatter <- xyplot(jitter(.resid)~jitter(.fitted),mpgf,groups=factor(cyl))
   plot(direct.label(mpg.scatter))
-
-  ## debug=TRUE shows more output on the plot, and a data table of the
-  ## direct labels
+  ## debug=TRUE shows more output on the plot, and data.tables of the
+  ## transformations from the original data to the direct labels
   plot(direct.label(mpg.scatter,debug=TRUE))
-
   ## bigger text works better here. With the smart.grid Positioning
   ## Method, the search grid size is the same size as the text box, so
   ## the grid is bigger here.
   plot(direct.label(mpg.scatter,list(cex=1.5,smart.grid),TRUE))
 
-  ## try custom panel function and title
-  mpgs2 <- update(mpg.scatter,
-                  panel=function(...){
-                    panel.abline(0,col="grey");panel.xyplot(...)},
-                  main="foobar2")
-  plot(direct.label(mpgs2,list(cex=2,smart.grid)))
+  ## direct labels are not as good when there are multiple panels, but
+  ## as long as not every class appears in every panel, it still
+  ## should be clearer than using a legend.
+  carpanels <- xyplot(jitter(hwy)~jitter(cty)|manufacturer,mpgf,groups=class,
+  main="City and highway fuel efficiency depends on manufacturer and car class")
+  print(direct.label(carpanels))
 
-  data(Chem97,package="mlmRev")
-  qqm <- qqmath(~gcsescore,Chem97,groups=gender,
-                f.value=ppoints(25),auto.key=list())
-  plot(direct.label(qqm,list("get.means","empty.grid"),TRUE))
-  ## default for points is different for default for lines
-  plot(direct.label(update(qqm,type=c("l","g"))))
-  ## you can hard-core label positions if you really want to:
-  static.labels <- data.frame(x=c(-2,0),y=c(6,4),groups=c("F","M"))
-  plot(direct.label(qqm,method=static.labels,debug=TRUE))
-  plot(direct.label(qqmath(~gcsescore|gender,Chem97,groups=factor(score),
-                           type=c('l','g'),f.value=ppoints(100))))
 
-  ## densityplot labeling
-  plot(direct.label(densityplot(~gcsescore,Chem97,groups=factor(score),
-                                plot.points=FALSE,n=500)))
-  ## Try with several panels:
-  plot(direct.label(densityplot(~gcsescore|gender,Chem97,plot.points=FALSE,
-                                groups=factor(score),layout=c(1,2),n=500)))
+  if(require(mlmRev)){
+    data(Chem97)
+    qqm <- qqmath(~gcsescore,Chem97,groups=gender,
+                  f.value=ppoints(25),auto.key=list())
+    plot(direct.label(qqm,list("get.means","empty.grid"),TRUE))
+    plot(direct.label(qqm,list("get.means","smart.grid"),TRUE))
+    ## default for points is different for default for lines
+    plot(direct.label(update(qqm,type=c("l","g"))))
+    ## you can hard-core label positions if you really want to:
+    plot(direct.label(qqm,static.labels(c(-2,0),c(6,4),c("F","M")),TRUE))
+    plot(direct.label(qqmath(~gcsescore|gender,Chem97,groups=factor(score),
+                             type=c('l','g'),f.value=ppoints(100))))
+
+    ## densityplot labeling
+    plot(direct.label(densityplot(~gcsescore,Chem97,groups=factor(score),
+                                  plot.points=FALSE,n=500)))
+    ## Try with several panels:
+    plot(direct.label(densityplot(~gcsescore|gender,Chem97,plot.points=FALSE,
+                                  groups=factor(score),layout=c(1,2),n=500)))
+  }
   iris2 <- melt(iris,id="Species")
   direct.label(densityplot(~value|variable,iris2,groups=Species,scales="free"))
   loci <- data.frame(ppp=c(rbeta(800,10,10),rbeta(100,0.15,1),rbeta(100,1,0.15)),
@@ -70,6 +126,7 @@ direct.label <- structure(function
   plot(direct.label(densityplot(~ppp,loci,groups=type,n=500)))
   lplot <- qplot(ppp,data=loci,colour=type,geom="density")
   print(direct.label(lplot))
+  direct.label(lplot,static.labels(c(0,0.5,1),0,c("POS","NEU","BAL"),vjust=1.1))
   ## respect the manual color scale. these 2 should be the same:
   lplot2 <- direct.label(lplot)+
     scale_colour_manual(values=c("red","black","blue"),legend=FALSE)
@@ -77,9 +134,9 @@ direct.label <- structure(function
   print(direct.label(lplot+scale_colour_manual(values=c("red","black","blue"))))
   
   ## dotplot:
-  plot(direct.label(dotplot(VADeaths,type="o"),angled.endpoints))
+  plot(direct.label(dotplot(VADeaths,type="o"),"angled.endpoints"))
   plot(direct.label(dotplot(VADeaths,type="o"),
-                    list(cex=0.7,dl.trans(y=y+0.1),top.qp)))
+         list(cex=0.7,dl.trans(y=y+0.1),"top.qp")))
   VAD2 <- VADeaths
   colnames(VAD2) <- sub(" ","\n",colnames(VAD2))
   plot(direct.label(dotplot(VAD2,type="o"),
@@ -94,14 +151,14 @@ direct.label <- structure(function
   names(vad2) <- names(vad)
   p3 <- qplot(deaths,age,data=vad2,
               group=demographic,geom="line",colour=demographic)
-  direct.label(p3,"top.points")
-  ## contour plot
+  direct.label(p3,"top.qp")
+  ## contour plot --- labels each piece, not each group!
   volcano3d <- melt(volcano)
   names(volcano3d) <- c("x", "y", "z")
-  v <- ggplot(volcano3d, aes(x, y, z = z))
-  v2 <- v + stat_contour(aes(colour = ..level..))
-  direct.label(v2)
-  direct.label(v2,"top.points")
+  v <- ggplot(volcano3d, aes(x, y, z = z,colour=..level..))+
+    stat_contour()
+  direct.label(v)
+  direct.label(v,"top.pieces")
 
   ## label 2 groups of longitudinal data:
   dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
@@ -118,9 +175,9 @@ direct.label <- structure(function
   direct.label(sprayplot)
   data(BodyWeight,package="nlme")
   ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
-  print(direct.label(ratplot))#default is maxvar.points
-  print(direct.label(ratplot,last.points))#squished together
-  print(direct.label(ratplot,last.qp)) ## not so good actually
+  print(direct.label(ratplot))#default is maxvar.qp
+  print(direct.label(ratplot,"last.points"))#squished together
+  print(direct.label(ratplot,"last.qp")) ## readable
   ## Say we want to use a simple linear model to explain rat body weight:
   fit <- lm(weight~Time+Diet+Rat,BodyWeight)
   bw <- fortify(fit,BodyWeight)
@@ -133,7 +190,7 @@ direct.label <- structure(function
   rat2 <- update(ratplot,
                  panel=panel.superpose,
                  panel.groups=panel.model)
-  print(direct.label(rat2,last.points))
+  print(direct.label(rat2,"last.qp"))
 
   ## complicated ridge regression lineplot ex. fig 3.8 from Elements of
   ## Statistical Learning, Hastie et al.
@@ -151,31 +208,31 @@ direct.label <- structure(function
     limpts <- transform(subset(molt,lambda==0),lambda=Inf,df=0,value=0)
     rbind(limpts,molt)
   }
-  data(prostate,package="ElemStatLearn")
-  pros <- subset(prostate,train==TRUE,select=-train)
-  m <- myridge(lpsa~.,pros)
-  p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
-              panel=function(...){
-                panel.xyplot(...)
-                panel.abline(h=0)
-                panel.abline(v=5,col="grey")
-              },
-              main="Ridge regression shrinks least squares coefficients",
-              ylab="scaled coefficients",
-              sub="grey line shows coefficients chosen by cross-validation",
-              xlab=expression(df(lambda)))
-  print(direct.label(update(p,xlim=c(0,9.25)),
-                     list(last.qp,cex=0.75,dl.trans(x=x+0.1))))
-  
+  if(require(ElemStatLearn)){
+    data(prostate)
+    pros <- subset(prostate,train==TRUE,select=-train)
+    m <- myridge(lpsa~.,pros)
+    p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
+                panel=function(...){
+                  panel.xyplot(...)
+                  panel.abline(h=0)
+                  panel.abline(v=5,col="grey")
+                },
+                main="Ridge regression shrinks least squares coefficients",
+                ylab="scaled coefficients",
+                sub="grey line shows coefficients chosen by cross-validation",
+                xlab=expression(df(lambda)))
+    print(direct.label(update(p,xlim=c(0,9.25)),
+                       list(last.qp,cex=0.75,dl.trans(x=x+0.1))))
+  }  
   ## some data from clustering algorithms
   data(iris.l1.cluster,package="directlabels")
   p <- ggplot(iris.l1.cluster,aes(lambda,alpha,group=row,colour=Species))+
     geom_line(alpha=1/4)+
     facet_grid(col~.)
   p2 <- p+xlim(-0.0025,max(iris.l1.cluster$lambda))
-  print(direct.label(p2,list(first.points,get.means)))
+  print(direct.label(p2,list("first.points","get.means","first.qp")))
 
-  ## TODO
   data(normal.l2.cluster,package="directlabels")
   p <- ggplot(normal.l2.cluster$path,aes(x,y))+
     geom_path(aes(group=row),colour="grey")+
@@ -183,182 +240,13 @@ direct.label <- structure(function
     geom_point(aes(colour=class),data=normal.l2.cluster$pts)+
     coord_equal()
   print(direct.label(p))
+  print(direct.label(p,"extreme.grid"))
   ## respect the color scale. these should look the same:
   print(direct.label(p+scale_colour_manual(values=rainbow(8))))
   print(direct.label(p)+scale_colour_manual(values=rainbow(8),legend=FALSE))
 
   lattice.options(oldopt)
 })
-
-label.positions <- function
-### Calculates table of positions of each label based on input data
-### for each panel and Positioning Method. This is meant for internal
-### use inside a direct.label method, and is a wrapper around
-### apply.method which makes sure the inputs are good and the outputs
-### are plottable. apply.method is more efficient and should be used
-### in the context of other Positioning Methods (i.e. dl.combine) and
-### label.positions should be used when you actually when to plot the
-### result (i.e. in lattice+ggplot2 backends).
-(d,
-### Data frame to which we will sequentially apply the Positioning
-### Method.
- method,
-### Method for direct labeling, described in
-### \code{\link{apply.method}}.
- debug=FALSE,
-### Show debug output? If TRUE, the resulting table of label positions
-### will be printed.
- ...
-### Passed to Positioning Function(s).
- ){
-  if(nrow(d)==0)return(d)## empty data frames can cause many bugs
-  ## make sure input data is in good format
-  d <- transform(d,
-                 x=as.numeric(x),
-                 groups=as.factor(groups))
-  if("y"%in%names(d))d <- transform(d,y=as.numeric(y))
-  ##save original levels for later in case PFs mess them up.
-  levs <- levels(d$groups)
-  ## first apply ignore.na function
-  d <- ignore.na(d)
-  d <- apply.method(method,d,debug=debug,...)
-  if(nrow(d)==0)return(d)## empty data frames can cause many bugs
-  ## rearrange factors in case pos fun messed up the order:
-  d$groups <- factor(as.character(d$groups),levs)
-  ## defaults for grid parameter values:
-  for(p in c("hjust","vjust")){
-    d[,p] <- if(p %in% names(d))as.character(d[,p]) else NA
-    d[is.na(d[,p]),p] <- 0.5
-  }
-  if(!"rot"%in%names(d))d$rot <- NA
-  d$rot[is.na(d$rot)] <- 0
-  if(!"cex"%in%names(d))d$cex <- NA
-  d$cex[is.na(d$cex)] <- 1
-  d <- unique(d)
-  if(debug)print(d)
-  d
-### Data frame of direct label positions. Each row describes the
-### position of 1 label to be drawn later.
-}
-
-apply.method <- function # Apply a Positioning Method
-### Run a Positioning Method list on a given data set. This function
-### contains all the logic for parsing a Positioning Method and
-### sequentially applying its elements to the input data to obtain the
-### label positions. This is useful since it is often much less
-### verbose to define Positioning Methods in list form instead of
-### function form, ex lasso.labels.
-(method,
-### Direct labeling Positioning Method, which is a list comprised of
-### any of the following: (1) a Positioning Function, (2) a character
-### string which is the name of an object that could be used, (3)
-### named values, or (4) a Positioning Method list. Starting from the
-### data frame of points to plot for the panel, the elements of the
-### list are applied in sequence, and each row of the resulting data
-### frame is used to draw a direct label.
- d,
-### Data frame to which we apply the Positioning Method.
- ...
-### Passed to Positioning Functions.
- ){
-  attr(d,"orig.data") <- d
-  if(!is.list(method))method <- list(method)
-  isconst <- function(){
-    m.var <- names(method)[1]
-    !(is.null(m.var)||m.var=="")
-  }
-  islist <- function()is.list(method[[1]])
-  isref <- function()(!isconst())&&is.character(method[[1]])
-  while(length(method)){
-    ## Resolve any PF names or nested lists
-    is.trans <- FALSE
-    while(islist()||isref()){
-      if(islist()){
-        method <- c(method[[1]],method[-1])
-      }else{ #must be character -> get the fun(s)
-        if(length(method[[1]])>1){
-          warning("using first element of character vector")
-          method[[1]] <- method[[1]][1]
-        }
-        is.trans <- grepl("^trans[.]",method[[1]])
-        method <- c(get(method[[1]]),method[-1])
-      }
-    }
-    if(isconst())
-      d[[names(method)[1]]] <- method[[1]]
-    else{
-      old <- d
-      d <- method[[1]](d,...)
-      attr(d,"orig.data") <-
-        if(is.trans)d else{
-          if(is.null(attr(old,"orig.data")))old
-          else attr(old,"orig.data")
-        }
-    }
-    method <- method[-1]
-  }
-  d
-### The final data frame returned after applying all of the items in
-### the Positioning Method list.
-}
-
-
-### Transformation function for 1d densityplots.
-trans.densityplot <- gapply.fun({
-  dens <- density(d$x,na.rm=TRUE)
-  data.frame(x=dens$x,y=dens$y)
-})
-trans.density <- trans.densityplot
-
-### Transformation function for 1d qqmath plots. This is a copy-paste
-### from panel.qqmath. (total hack)
-trans.qqmath <- function(d,distribution,f.value,qtype=7,...){
-  gapply(d,function(d){
-    x <- as.numeric(d$x)
-    distribution <- if (is.function(distribution)) 
-      distribution
-    else if (is.character(distribution)) 
-      get(distribution)
-    else eval(distribution)
-    nobs <- sum(!is.na(x))
-    if (is.null(f.value)) 
-      data.frame(x = distribution(ppoints(nobs)), y = sort(x))
-    else data.frame(x = distribution(
-                      if (is.numeric(f.value))f.value
-                      else f.value(nobs)),
-                    y = quantile(x,
-                      if (is.numeric(f.value))f.value
-                      else f.value(nobs),
-                      names = FALSE, type = qtype, na.rm = TRUE))
-  })
-}
-
-### Place points on top of the mean value of the rug.
-rug.mean <- function(d,...,end)
-  gapply(d,function(d)
-         data.frame(x=mean(d$x),
-                   y=as.numeric(convertY(unit(end,"npc"),"native")),
-                   vjust=0))
-
-### Label points at the top, making sure they don't collide.
-top.qp <- list("top.points","calc.boxes",qp.labels("x","w"))
-
-### Label points at the zero before the first nonzero y value.
-lasso.labels <-
-  list(rot=60,
-       gapply.fun({
-         d <- d[order(d$x),]
-         i <- which(d$y!=0)[1]
-         hjust <- as.integer(d[i,"y"]>0)
-         data.frame(d[i-1,],hjust,vjust=hjust)
-       }),
-       "calc.boxes",
-       ## calculate how wide the tilted box is
-       dl.trans(h.inches=convertHeight(unit(h,"native"),"inches",TRUE)),
-       dl.trans(hyp.inches=h.inches/sin(2*pi*rot/360)),
-       dl.trans(hyp=convertWidth(unit(hyp.inches,"inches"),"native",TRUE)),
-       ## avoid collisions between tilted boxes
-       qp.labels("x","hyp"))
 
 default.picker <- function
 ### Look at options() for a user-defined default Positioning Method
@@ -373,11 +261,3 @@ default.picker <- function
   do.call(p,as.list(parent.frame()))
 }
 
-### Calculate a 2d density estimate then follow the gradient to a
-### point outside the convex hull.
-dens.gradient <- function(d,...){
-  require(ks)
-  est <- drvkde(with(d,cbind(x,y)),1:2,1,se=FALSE)
-  ##print(dens)
-  d
-}

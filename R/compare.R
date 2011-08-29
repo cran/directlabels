@@ -89,13 +89,12 @@ dlcompare <- structure(function # Direct label comparison plot
 
   if(names(dev.cur())!="postscript"){##to avoid error on pkg check
     ## Try some more exotic labeling options.
-    exotic <- list(lines2,
+    exotic <- list("last.points",
                    rot=c(0,180),
                    fontsize=c(10,20),
                    fontface=c("bold","italic"),
                    fontfamily=c("mono","serif"),
                    alpha=c(0.25,1))
-    ## Currently ggplot2 backend doesn't support face and family.
     dlcompare(plots,list(exotic))
   }
   
@@ -139,20 +138,21 @@ dlcompare <- structure(function # Direct label comparison plot
     limpts <- transform(subset(molt,lambda==0),lambda=Inf,df=0,value=0)
     rbind(limpts,molt)
   }
-  data(prostate,package="ElemStatLearn")
-  pros <- subset(prostate,train==TRUE,select=-train)
-  m <- myridge(lpsa~.,pros)
-  p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
-              panel=function(...){
-                panel.xyplot(...)
-                panel.abline(h=0)
-              },
-              xlim=c(0,10),
-              auto.key=list(space="right",lines=TRUE,points=FALSE),
-              ylab="scaled coefficients",
-              xlab=expression(df(lambda)))
-  dlcompare(list(p,ratplot),list("last.bumpup","last.qp"))
-
+  if(require(ElemStatLearn)){
+    data(prostate)
+    pros <- subset(prostate,train==TRUE,select=-train)
+    m <- myridge(lpsa~.,pros)
+    p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
+                panel=function(...){
+                  panel.xyplot(...)
+                  panel.abline(h=0)
+                },
+                xlim=c(0,10),
+                auto.key=list(space="right",lines=TRUE,points=FALSE),
+                ylab="scaled coefficients",
+                xlab=expression(df(lambda)))
+    dlcompare(list(p,ratplot),list("last.bumpup","last.qp"))
+  }
   ## direct labels are way less confusing here
   p2 <- qplot(df,value,data=m,group=variable,colour=variable,
               geom=c("line","point"))+geom_hline(yintercept=0)+xlim(0,9)
@@ -161,9 +161,14 @@ dlcompare <- structure(function # Direct label comparison plot
                 list(cex=c(0.5,1,2,4),last.qp,dl.trans(x=x+0.1),
                      calc.boxes,draw.rects))
   dlcompare(list(p),pfuns,rects=FALSE,row.items="posfuns")
-  ## Interesting --- qp.last almost works here, but actually we are
-  ## getting the bounding boxes in the wrong viewport -> wrong size.
-  dlcompare(list(p,p2),pfuns[1:2],rects=FALSE,debug=TRUE)
+  dlcompare(list(p,p2),pfuns[1:2],rects=FALSE)
 
+  vad <- as.data.frame.table(VADeaths)
+  names(vad) <- c("age","demographic","deaths")
+  ## color + legend
+  leg <- ggplot(vad,aes(deaths,age,colour=demographic))+
+    geom_line(aes(group=demographic))
+  dlcompare(list(leg),list(list(cex=0.5,"top.qp"),list("last.points",rot=30)))
+  
   lattice.options(oldopt)
 })

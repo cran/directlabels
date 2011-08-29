@@ -5,7 +5,8 @@
 line, subject to the constraint that they should not
 overlap.}
 \usage{
-qp.labels(var, spacer)
+qp.labels(var,
+spacer)
 }
 \arguments{
   \item{var}{
