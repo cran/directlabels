@@ -43,12 +43,6 @@ plots <- list(lattice=
               xyplot(deaths~time,ddf,groups=sex,type="l",xlim=c(-15,80)),
               ggplot2=
               qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-10,80))
-pos.funs <- list("first.points","lines2")
-##pdf("compare.pdf",width=10,height=10)
-dlcompare(plots,pos.funs)
-dlcompare(plots,pos.funs,rects=FALSE) ## hide the grid
-dlcompare(plots,pos.funs,rects=FALSE,row.items="posfuns") ## exchange axes
-##dev.off();system("xpdf compare.pdf")
 if(names(dev.cur())!="postscript"){##to avoid error on pkg check
   ## Try some more exotic labeling options.
   exotic <- list("last.points",
@@ -60,6 +54,12 @@ if(names(dev.cur())!="postscript"){##to avoid error on pkg check
   dlcompare(plots,list(exotic))
 }
 
+pos.funs <- list("first.points","lines2")
+##pdf("compare.pdf",width=10,height=10)
+dlcompare(plots,pos.funs)
+dlcompare(plots,pos.funs,rects=FALSE) ## hide the grid
+dlcompare(plots,pos.funs,rects=FALSE,row.items="posfuns") ## exchange axes
+##dev.off();system("xpdf compare.pdf")
 ## All of these subsets should produce valid comparison plots.
 dlcompare(plots[1],pos.funs[1])
 dlcompare(plots[1],pos.funs)
@@ -71,7 +71,14 @@ unlabeled.plots <- structure(plots,names=NULL)
 dlcompare(plots,mixed.funs)
 dlcompare(plots,mixed.funs[3])
 data(BodyWeight,package="nlme")
-ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type="l",layout=c(3,1))
+ratplot <- xyplot(weight~Time|Diet,BodyWeight,
+                  groups=Rat,type="l",layout=c(3,1))
+##   ggrat <- qplot(Time,weight,data=BodyWeight,
+##                  colour=Rat,geom="line",facets=.~Diet)
+##   png("~/R/directlabels/www/rat-ggplot2-firstlast.png",h=400,w=900)
+##   dlcompare(list(ggrat+ylim(130,max(BodyWeight$weight))),
+##             list("first.qp","last.qp"),row.items="pfs",rects=FALSE)
+##   dev.off()
 ## Compare scatterplot labeling methods.
 scatters <-
   list(xyplot(jitter(cty)~jitter(hwy),mpg,groups=class,aspect=1),

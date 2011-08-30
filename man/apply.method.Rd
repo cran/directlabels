@@ -10,8 +10,8 @@ function form, ex lasso.labels.}
 \usage{
 apply.method(method,
 d,
-debug = FALSE,
-...)
+...,
+debug = FALSE)
 }
 \arguments{
   \item{method}{Direct labeling Positioning Method, which is a list comprised of
@@ -22,9 +22,9 @@ data frame of points to plot for the panel, the elements of the
 list are applied in sequence, and each row of the resulting data
 frame is used to draw a direct label.}
   \item{d}{Data frame to which we apply the Positioning Method.}
+  \item{\dots}{Named arguments, passed to Positioning Functions.}
   \item{debug}{
 }
-  \item{\dots}{Named arguments, passed to Positioning Functions.}
 }
 
 \value{The final data frame returned after applying all of the items in

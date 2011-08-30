@@ -61,7 +61,7 @@ direct.label <- structure(function
  debug=FALSE
 ### Show debug output?
  ){
-  if(!is.null(method)&&class(method)=="character"&&method=="legend")
+  if(is.character(method)&&method[1]=="legend")
     UseMethod("uselegend")
   else
     UseMethod("direct.label")
