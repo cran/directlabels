@@ -6,7 +6,14 @@ that will eventually be used to plot the labels. That way each
 individual Positioning Method doesn't have to worry about keeping
 track of all the weird annotation columns that can be there on input.
 
-2.0
+how to automatically adjust axes to make direct labels immediately
+legible? For multipanel plots you would have to adjust all the scales!
+
+method for .zoo plots?
+
+handling custom # of bins/custom densityplot params?
+
+2.0 29 August 2011
 
 dl.move and static.labels allow specification of label positions in
 terms of the displayed axes! Internally, they convert the

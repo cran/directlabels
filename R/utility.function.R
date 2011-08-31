@@ -147,11 +147,9 @@ dl.combine <- structure(function # Combine output of several methods
 gapply.fun <- structure(function # Direct label groups independently
 ### Makes a function you can use to specify the location of each group
 ### independently.
-(expr,
+(expr
 ### Expression that takes a subset of the d data frame, with data from
 ### only a single group, and returns the direct label position.
- ...
-### variables to store for access to code in expr.
  ){
   foo <- substitute(expr)
   f <- function(d,...)eval(foo)
@@ -672,9 +670,9 @@ apply.method <- function # Apply a Positioning Method
 ### frame is used to draw a direct label.
  d,
 ### Data frame to which we apply the Positioning Method.
- debug=FALSE,
- ...
+ ...,
 ### Named arguments, passed to Positioning Functions.
+ debug=FALSE
  ){
   attr(d,"orig.data") <- d
   if(!is.list(method))method <- list(method)

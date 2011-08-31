@@ -26,11 +26,14 @@ vad <- as.data.frame.table(VADeaths)
 names(vad) <- c("age","demographic","deaths")
 ## color + legend
 leg <- ggplot(vad,aes(deaths,age,colour=demographic))+
-  geom_line(aes(group=demographic))
-print(leg)
-direct.label(leg,list("last.points",rot=30))
-direct.label(leg,list("last.points",rot=30),TRUE)
-leg+geom_dl(aes(label=demographic),list("last.points",rot=30),debug=TRUE)
+  geom_line(aes(group=demographic))+
+  xlim(8,80)
+print(direct.label(leg,list("last.points",rot=30)))
+## this is what direct.label is doing internally:
+labeled <- leg+
+  geom_dl(aes(label=demographic),list("last.points",rot=30))+
+  scale_colour_discrete(legend=FALSE)
+print(labeled)
 ## no color, just direct labels!
 p <- ggplot(vad,aes(deaths,age))+
   geom_line(aes(group=demographic))+
@@ -53,9 +56,19 @@ print(bw)
 bw2 <- bw+geom_dl(method="first.qp")
 print(bw2)
 ## add color
-bw2+aes(colour=Rat)+
+colored <- bw2+aes(colour=Rat)+
   scale_colour_discrete(legend=FALSE)
-## add color and legend
-bwleg <- bwbase+aes(colour=Rat)
-direct.label(bwleg)
+print(colored)
+## or just use direct.label if you use color:
+direct.label(bwbase+aes(colour=Rat),dl.combine("first.qp","last.qp"))
+## iris data example
+giris <- ggplot(iris,aes(Petal.Length,Sepal.Length))+
+  geom_point(aes(shape=Species))
+giris.labeled <- giris+
+  geom_dl(aes(label=Species),method="smart.grid")+
+  scale_shape_manual(values=c(setosa=1,virginica=6,versicolor=3),
+                     legend=FALSE)
+##png("~/R/directlabels/www/scatter-bw-ggplot2.png",h=503,w=503)
+print(giris.labeled)
+##dev.off()
 }

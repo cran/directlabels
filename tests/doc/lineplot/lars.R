@@ -9,6 +9,7 @@ beta <- scale(coef(fit),FALSE,1/fit$normx)
 arclength <- rowSums(abs(beta))
 path <- data.frame(melt(beta),arclength)
 names(path)[1:3] <- c("step","variable","standardized.coef")
+library(ggplot2)
 ggplot(path,aes(arclength,standardized.coef,colour=variable))+
   geom_line(aes(group=variable))+
   opts(title="LASSO path for prostate cancer data calculated using the LARS")+
