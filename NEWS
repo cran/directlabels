@@ -13,6 +13,18 @@ method for .zoo plots?
 
 handling custom # of bins/custom densityplot params?
 
+2.2 bugfixes
+
+ggplot2 autopicker simpler.
+
+use aes_string instead of aes in direct.label.ggplot
+
+2.1 31 August 2011 -- bugfixes
+
+gapply can take positional arguments like gapply(d,subset,y==max(y))
+
+melt is no longer used in top.bumptwice
+
 2.0 29 August 2011
 
 dl.move and static.labels allow specification of label positions in

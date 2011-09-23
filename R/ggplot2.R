@@ -125,7 +125,7 @@ direct.label.ggplot <- function
   if(any(has.colour)){
     i <- which(has.colour)[1] ##just pick the first one
     L <- p$layers[[i]]
-    colvar <- cvars[[i]]
+    colvar <- as.character(cvars[[i]])
     ## FIXME: kind of a hack.
     if(colvar=="..level..")SCALE <- scale_colour_continuous
     ##colvar <- gsub("^[.][.](.*)[.][.]$","\\1",colvar)
@@ -133,8 +133,7 @@ direct.label.ggplot <- function
   ## Try to figure out a good default based on the colored geom
   geom <- L$geom$objname
   if(is.null(method))method <- default.picker("ggplot")
-  aes_args <- list(label=as.symbol(colvar),colour=as.symbol(colvar))
-  dlgeom <- geom_dl(do.call(aes,aes_args),method,
+  dlgeom <- geom_dl(aes_string(label=colvar,colour=colvar),method,
                     stat=L$stat,debug=debug,data=L$data)
   scale.types <- sapply(p$scales$.scales,"[[",".output")
   scale.i <- which("colour"==scale.types)
@@ -149,16 +148,13 @@ direct.label.ggplot <- function
 
 defaultpf.ggplot <- function
 ### Default method selection method for ggplot2 plots.
-(geom,p,...){
+(geom,p,L,colvar,...){
   switch(geom,
          density="top.bumptwice",
          line={
-           varnames <- c(groups="colour",x="x")
-           if("y" %in% names(p$mapping))varnames <- c(varnames,y="y")
-           rename.vec <- sapply(p$mapping[varnames],deparse)
-           rename.vec <- gsub("[a-z]+[(]([^)]+)[)]","\\1",rename.vec)
-           d <- structure(p$data[,rename.vec],names=names(varnames))
-           if(nlevels(d$groups)==2)"lines2" else "maxvar.qp"
+           d <- L[[colvar]]
+           if(is.null(d))d <- p[[colvar]]
+           if(nlevels(d[,colvar])==2)"lines2" else "maxvar.qp"
          },
          point="smart.grid",
          path="bottom.pieces",
