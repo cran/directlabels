@@ -5,12 +5,18 @@
 \usage{
 defaultpf.ggplot(geom,
 p,
+L,
+colvar,
 ...)
 }
 \arguments{
   \item{geom}{
 }
   \item{p}{
+}
+  \item{L}{
+}
+  \item{colvar}{
 }
   \item{\dots}{
 }
