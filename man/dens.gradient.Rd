@@ -3,10 +3,7 @@
 \title{dens gradient}
 \description{Calculate a 2d density estimate then follow the gradient to a
 point outside the convex hull.}
-\usage{
-dens.gradient(d,
-...)
-}
+\usage{dens.gradient(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -16,7 +13,7 @@ dens.gradient(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

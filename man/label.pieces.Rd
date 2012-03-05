@@ -3,10 +3,7 @@
 \title{label pieces}
 \description{Make a Positioning Method that will, for every piece, select
 points and assign a vjust value.}
-\usage{
-label.pieces(FUN,
-VJUST)
-}
+\usage{label.pieces(FUN, VJUST)}
 \arguments{
   \item{FUN}{
 }
@@ -16,7 +13,7 @@ VJUST)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

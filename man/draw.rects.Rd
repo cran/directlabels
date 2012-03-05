@@ -4,10 +4,7 @@
 \description{Positioning Function that draws boxes around label positions. Need
 to have previously called calc.boxes. Does not edit the data
 frame.}
-\usage{
-draw.rects(d,
-...)
-}
+\usage{draw.rects(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -17,7 +14,7 @@ draw.rects(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

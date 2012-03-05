@@ -35,8 +35,9 @@ clusterpath article
 }
 \examples{
 data(iris.l1.cluster,package="directlabels")
+iris.l1.cluster$y <- iris.l1.cluster$alpha
 library(ggplot2)
-p <- ggplot(iris.l1.cluster,aes(lambda,alpha,group=row,colour=Species))+
+p <- ggplot(iris.l1.cluster,aes(lambda,y,group=row,colour=Species))+
   geom_line(alpha=1/4)+
   facet_grid(col~.)
 p2 <- p+xlim(-0.0025,max(iris.l1.cluster$lambda))

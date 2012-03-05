@@ -2,12 +2,7 @@
 \alias{static.labels}
 \title{static labels}
 \description{to hard-code label positions...}
-\usage{
-static.labels(x,
-y,
-groups,
-...)
-}
+\usage{static.labels(x, y, groups, ...)}
 \arguments{
   \item{x}{
 }
@@ -21,7 +16,7 @@ groups,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -2,10 +2,7 @@
 \alias{first.points}
 \title{first points}
 \description{Positioning Method for the first of a group of points.}
-\usage{
-first.points(d,
-...)
-}
+\usage{first.points(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ first.points(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

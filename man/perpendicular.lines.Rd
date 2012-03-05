@@ -5,11 +5,7 @@
 perpendicular line for each cluster that goes through its
 center. For each cluster, return the point the lies furthest out
 along this line.}
-\usage{
-perpendicular.lines(d,
-debug = FALSE,
-...)
-}
+\usage{perpendicular.lines(d, debug = FALSE, ...)}
 \arguments{
   \item{d}{Data frame with groups x y.}
   \item{debug}{If TRUE will draw points at the center of each cluster and some
@@ -20,7 +16,7 @@ lines that show how the points returned were chosen.}
 \value{Data frame with groups x y, giving the point for each cluster
 which is the furthest out along the line drawn through its center.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

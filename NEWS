@@ -1,10 +1,6 @@
 TODO
 
-Implement some mechanism which guarantees that only the columns
-returned by a Positioning Method will be updated in the data frame
-that will eventually be used to plot the labels. That way each
-individual Positioning Method doesn't have to worry about keeping
-track of all the weird annotation columns that can be there on input.
+Get rid of dl.summarize and gapply.fun for simplicity?
 
 how to automatically adjust axes to make direct labels immediately
 legible? For multipanel plots you would have to adjust all the scales!
@@ -12,6 +8,39 @@ legible? For multipanel plots you would have to adjust all the scales!
 method for .zoo plots?
 
 handling custom # of bins/custom densityplot params?
+
+problems with plotting color labels in lattice when col= is specified,
+see etc/individual.R
+
+see etc/xYplot.R for a problem with plotting some weird trellis
+objects.
+
+contourplot labels as in lattice::panel.contourplot or C source code
+in r-source/src/main/plot3d.c
+
+2.4 --- 5 March 2012
+
+Suggest nlme to avoid warning on pkg check.
+
+require(proto) in geom_dl to avoid error if it is called without
+direct.label.ggplot
+
+2.3 --- 2 March 2012
+
+In apply.method, we look at all groups and determine which columns are
+invariant in each, then after the Positioning Function is applied, we
+write these values to the resulting data.frame if it does not contain
+these variables. That way each individual Positioning Method doesn't
+have to worry about keeping track of all the weird annotation columns
+that can be there on input.
+
+Works with ggplot2 0.9.0, including new simplified hiding of the
+legend, using guides(colour="none")
+
+dlgrobs have names == GRID.dlgrob.method if method is a character
+string.
+
+Tiebreaking for qp.labels when we are doing lineplots.
 
 2.2 bugfixes
 

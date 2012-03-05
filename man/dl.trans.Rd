@@ -4,16 +4,14 @@
 \description{Make a function that transforms the data. This is for conveniently
 making a function that calls transform on the data frame, with the
 arguments provided. See examples.}
-\usage{
-dl.trans(...)
-}
+\usage{dl.trans(...)}
 \arguments{
   \item{\dots}{Arguments to pass to transform.}
 }
 
 \value{A Positioning Function.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

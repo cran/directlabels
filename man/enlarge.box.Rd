@@ -2,10 +2,7 @@
 \alias{enlarge.box}
 \title{enlarge box}
 \description{Make text bounding box larger by some amount.}
-\usage{
-enlarge.box(d,
-...)
-}
+\usage{enlarge.box(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ enlarge.box(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

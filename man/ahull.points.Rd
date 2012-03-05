@@ -2,11 +2,7 @@
 \alias{ahull.points}
 \title{ahull points}
 \description{Calculate the points on the ashape.}
-\usage{
-ahull.points(d,
-...,
-ahull = default.ahull(d))
-}
+\usage{ahull.points(d, ..., ahull = default.ahull(d))}
 \arguments{
   \item{d}{
 }
@@ -18,7 +14,7 @@ ahull = default.ahull(d))
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -2,9 +2,7 @@
 \alias{midrange}
 \title{midrange}
 \description{Point halfway between the min and max}
-\usage{
-midrange(x)
-}
+\usage{midrange(x)}
 \arguments{
   \item{x}{
 }
@@ -12,7 +10,7 @@ midrange(x)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

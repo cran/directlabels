@@ -3,9 +3,7 @@
 \title{Direct label groups independently}
 \description{Makes a function you can use to specify the location of each group
 independently.}
-\usage{
-gapply.fun(expr)
-}
+\usage{gapply.fun(expr)}
 \arguments{
   \item{expr}{Expression that takes a subset of the d data frame, with data from
 only a single group, and returns the direct label position.}
@@ -13,7 +11,7 @@ only a single group, and returns the direct label position.}
 
 \value{A Positioning Function.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

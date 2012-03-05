@@ -2,10 +2,7 @@
 \alias{maxvar.points}
 \title{maxvar points}
 \description{Do first or last, whichever has points most spread out.}
-\usage{
-maxvar.points(d,
-...)
-}
+\usage{maxvar.points(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ maxvar.points(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

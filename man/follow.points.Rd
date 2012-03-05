@@ -5,11 +5,7 @@
 line out far enough to give a box outside the cloud. Out of all
 the boxes constructed in this way that do not contain any points,
 take the one which has the smallest distance to the center. }
-\usage{
-follow.points(d,
-debug = FALSE,
-...)
-}
+\usage{follow.points(d, debug = FALSE, ...)}
 \arguments{
   \item{d}{
 }
@@ -21,7 +17,7 @@ debug = FALSE,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
