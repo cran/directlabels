@@ -2,10 +2,7 @@
 \alias{chull.points}
 \title{chull points}
 \description{Calculate the points on the convex hull.}
-\usage{
-chull.points(d,
-...)
-}
+\usage{chull.points(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ chull.points(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

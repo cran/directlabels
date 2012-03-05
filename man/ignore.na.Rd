@@ -2,10 +2,7 @@
 \alias{ignore.na}
 \title{ignore na}
 \description{Remove rows for which either x or y is NA}
-\usage{
-ignore.na(d,
-...)
-}
+\usage{ignore.na(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ ignore.na(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -1,4 +1,5 @@
 ## example from help(stat_contour)
+library(reshape2)
 volcano3d <- melt(volcano)
 names(volcano3d) <- c("x", "y", "z")
 library(ggplot2)

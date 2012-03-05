@@ -2,10 +2,7 @@
 \alias{top.points}
 \title{top points}
 \description{Positioning Method for the top of a group of points.}
-\usage{
-top.points(d,
-...)
-}
+\usage{top.points(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ top.points(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

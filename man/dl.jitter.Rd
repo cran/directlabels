@@ -2,10 +2,7 @@
 \alias{dl.jitter}
 \title{dl jitter}
 \description{Jitter the label positions.}
-\usage{
-dl.jitter(d,
-...)
-}
+\usage{dl.jitter(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ dl.jitter(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

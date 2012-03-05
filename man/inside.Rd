@@ -2,10 +2,7 @@
 \alias{inside}
 \title{inside}
 \description{Calculate for each box how many points are inside.}
-\usage{
-inside(boxes,
-points)
-}
+\usage{inside(boxes, points)}
 \arguments{
   \item{boxes}{Data frame of box descriptions, each row is 1 box, need columns
 left right top bottom.}
@@ -14,7 +11,7 @@ left right top bottom.}
 
 \value{Vector of point counts for each box.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

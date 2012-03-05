@@ -2,10 +2,7 @@
 \alias{in1which}
 \title{in1which}
 \description{Calculate which points fall in a box.}
-\usage{
-in1which(p,
-box)
-}
+\usage{in1which(p, box)}
 \arguments{
   \item{p}{data frame of points with columns x and y and many rows.}
   \item{box}{data frame of 1 row with columns left right top bottom.}
@@ -13,7 +10,7 @@ box)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

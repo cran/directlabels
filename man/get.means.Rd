@@ -2,10 +2,7 @@
 \alias{get.means}
 \title{get means}
 \description{Positioning Function for the mean of each cluster of points.}
-\usage{
-get.means(d,
-...)
-}
+\usage{get.means(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ get.means(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

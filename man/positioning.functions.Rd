@@ -40,6 +40,7 @@ p <- ggplot(grid,aes(wind,temperature,z=fit))+
 },
 {
 ## example from help(stat_contour)
+library(reshape2)
 volcano3d <- melt(volcano)
 names(volcano3d) <- c("x", "y", "z")
 library(ggplot2)
@@ -59,7 +60,7 @@ p <- densityplot(~gcsescore|gender,Chem97,
             n=500,plot.points=FALSE)
 },
 {
-library(reshape)
+library(reshape2)
 iris2 <- melt(iris,id="Species")
 library(lattice)
 p <- densityplot(~value|variable,iris2,groups=Species,scales="free")
@@ -120,6 +121,7 @@ library(lars)
 fit <- lars(x,y,type="lasso")
 beta <- scale(coef(fit),FALSE,1/fit$normx)
 arclength <- rowSums(abs(beta))
+library(reshape2)
 path <- data.frame(melt(beta),arclength)
 names(path)[1:3] <- c("step","variable","standardized.coef")
 library(ggplot2)
@@ -133,6 +135,7 @@ p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
 ## Statistical Learning, Hastie et al.
 myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
   require(MASS)
+  require(reshape2)
   fit <- lm.ridge(f,data,lambda=lambda)
   X <- data[-which(names(data)==as.character(f[[2]]))]
   Xs <- svd(scale(X)) ## my d's should come from the scaled matrix

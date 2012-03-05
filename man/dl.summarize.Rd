@@ -2,19 +2,16 @@
 \alias{dl.summarize}
 \title{dl summarize}
 \description{summarize which preserves important columns for direct labels.}
-\usage{
-dl.summarize(d,
-...)
-}
+\usage{dl.summarize(OLD, ...)}
 \arguments{
-  \item{d}{data frame}
+  \item{OLD}{data frame}
   \item{\dots}{
 }
 }
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

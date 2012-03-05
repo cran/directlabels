@@ -4,10 +4,7 @@
 \description{Process data points using the Positioning Method and draw the
 resulting direct labels. This is called for every panel with
 direct labels, every time the plot window is resized.}
-\usage{
-\method{drawDetails}{dlgrob}(x,
-recording)
-}
+\usage{\method{drawDetails}{dlgrob}(x, recording)}
 \arguments{
   \item{x}{
 }
@@ -17,7 +14,7 @@ recording)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

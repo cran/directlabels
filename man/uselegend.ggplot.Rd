@@ -2,10 +2,7 @@
 \alias{uselegend.ggplot}
 \title{uselegend ggplot}
 \description{Show the ggplot2 legend, for comparison.}
-\usage{
-uselegend.ggplot(p,
-...)
-}
+\usage{uselegend.ggplot(p, ...)}
 \arguments{
   \item{p}{The ggplot object.}
   \item{\dots}{Ignored.}
@@ -13,7 +10,7 @@ uselegend.ggplot(p,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

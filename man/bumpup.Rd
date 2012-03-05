@@ -3,10 +3,7 @@
 \title{bumpup}
 \description{Sequentially bump labels up, starting from the bottom, if they
 collide with the label underneath.}
-\usage{
-bumpup(d,
-...)
-}
+\usage{bumpup(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -16,7 +13,7 @@ bumpup(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

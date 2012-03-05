@@ -7,12 +7,7 @@ sequentially applying its elements to the input data to obtain the
 label positions. This is useful since it is often much less
 verbose to define Positioning Methods in list form instead of
 function form, ex lasso.labels.}
-\usage{
-apply.method(method,
-d,
-...,
-debug = FALSE)
-}
+\usage{apply.method(method, d, ..., debug = FALSE)}
 \arguments{
   \item{method}{Direct labeling Positioning Method, which is a list comprised of
 any of the following: (1) a Positioning Function, (2) a character
@@ -30,7 +25,7 @@ frame is used to draw a direct label.}
 \value{The final data frame returned after applying all of the items in
 the Positioning Method list.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

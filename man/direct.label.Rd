@@ -1,22 +1,27 @@
 \name{direct.label}
 \alias{direct.label}
-\title{direct label}
-\description{Add direct labels to a plot. This is a S3 generic and there are
-appropriate methods for "trellis" and "ggplot" objects.}
-\usage{
-direct.label(p,
-method = NULL,
-debug = FALSE)
-}
+\alias{directlabels}
+\title{Direct labels for color decoding}
+\description{Add direct labels to a plot, and hide the color legend. Modern
+plotting packages like lattice and ggplot2 show automatic legends
+based on the variable specified for color, but these legends can
+be confusing if there are too many colors. Direct labels are a
+useful and clear alternative to a confusing legend in many common
+plots.}
+\usage{direct.label(p, method = NULL, debug = FALSE)}
 \arguments{
-  \item{p}{The plot to which you would like to add direct labels.}
-  \item{method}{Positioning Method.}
+  \item{p}{The "lattice" or "ggplot" object with things drawn in different
+colors.}
+  \item{method}{Positioning Method, which determines the positions of the direct
+labels as a function of the plotted data. If NULL, we examine the
+plot p and try to choose an appropriate default. See ?apply.method
+for more information about Positioning Methods.}
   \item{debug}{Show debug output?}
 }
 
-\value{The plot object, with direct labels added.}
+\value{A plot with direct labels and no color legend.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
@@ -30,6 +35,7 @@ print(direct.label(scatter))
 ## Use a different Positioning Method, and edit one of the label
 ## positions by hand
 print(direct.label(scatter,list("extreme.grid",dl.move("suv",15,15))))
+
 ## scatterplot in lattice
 m <- lm(cty~displ,data=mpg)
 mpgf <- fortify(m,mpg)
@@ -44,12 +50,15 @@ plot(direct.label(mpg.scatter,debug=TRUE))
 ## Method, the search grid size is the same size as the text box, so
 ## the grid is bigger here.
 plot(direct.label(mpg.scatter,list(cex=1.5,smart.grid),TRUE))
+
 ## direct labels are not as good when there are multiple panels, but
 ## as long as not every class appears in every panel, it still
 ## should be clearer than using a legend.
 carpanels <- xyplot(jitter(hwy)~jitter(cty)|manufacturer,mpgf,groups=class,
 main="City and highway fuel efficiency depends on manufacturer and car class")
 print(direct.label(carpanels))
+
+
 if(require(mlmRev)){
   data(Chem97)
   qqm <- qqmath(~gcsescore,Chem97,groups=gender,
@@ -62,6 +71,7 @@ if(require(mlmRev)){
   plot(direct.label(qqm,static.labels(c(-2,0),c(6,4),c("F","M")),TRUE))
   plot(direct.label(qqmath(~gcsescore|gender,Chem97,groups=factor(score),
                            type=c('l','g'),f.value=ppoints(100))))
+
   ## densityplot labeling
   plot(direct.label(densityplot(~gcsescore,Chem97,groups=factor(score),
                                 plot.points=FALSE,n=500)))
@@ -69,6 +79,7 @@ if(require(mlmRev)){
   plot(direct.label(densityplot(~gcsescore|gender,Chem97,plot.points=FALSE,
                                 groups=factor(score),layout=c(1,2),n=500)))
 }
+require(reshape2)
 iris2 <- melt(iris,id="Species")
 direct.label(densityplot(~value|variable,iris2,groups=Species,scales="free"))
 loci <- data.frame(ppp=c(rbeta(800,10,10),rbeta(100,0.15,1),rbeta(100,1,0.15)),
@@ -79,7 +90,7 @@ print(direct.label(lplot))
 direct.label(lplot,static.labels(c(0,0.5,1),0,c("POS","NEU","BAL"),vjust=1.1))
 ## respect the manual color scale. these 2 should be the same:
 lplot2 <- direct.label(lplot)+
-  scale_colour_manual(values=c("red","black","blue"),legend=FALSE)
+  scale_colour_manual(values=c("red","black","blue"),guide="none")
 print(lplot2)
 print(direct.label(lplot+scale_colour_manual(values=c("red","black","blue"))))
 
@@ -109,6 +120,7 @@ v <- ggplot(volcano3d, aes(x, y, z = z,colour=..level..))+
   stat_contour()
 direct.label(v)
 direct.label(v,"top.pieces")
+
 ## label 2 groups of longitudinal data:
 dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
 ddf <- melt(as.data.frame(dts),id="time")
@@ -118,6 +130,7 @@ plots <- list(lattice=xyplot(deaths~time,ddf,groups=sex,type="l"),
 oask <- devAskNewPage(TRUE)
 for(p in plots)print(direct.label(p)) ## should default to lines2
 devAskNewPage(oask)
+
 ## lineplot labeling
 sprayplot <- xyplot(decrease~treatment,OrchardSprays,groups=rowpos,type="a")
 direct.label(sprayplot)
@@ -139,6 +152,7 @@ rat2 <- update(ratplot,
                panel=panel.superpose,
                panel.groups=panel.model)
 print(direct.label(rat2,"last.qp"))
+
 ## complicated ridge regression lineplot ex. fig 3.8 from Elements of
 ## Statistical Learning, Hastie et al.
 myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
@@ -150,6 +164,7 @@ myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
   ## make the x axis degrees of freedom
   df <- sapply(lambda,function(l)sum(dsq/(dsq+l)))
   D <- data.frame(t(fit$coef),lambda,df) # scaled coefs
+  require(reshape2)
   molt <- melt(D,id=c("lambda","df"))
   ## add in the points for df=0
   limpts <- transform(subset(molt,lambda==0),lambda=Inf,df=0,value=0)
@@ -170,15 +185,17 @@ if(require(ElemStatLearn)){
               sub="grey line shows coefficients chosen by cross-validation",
               xlab=expression(df(lambda)))
   print(direct.label(update(p,xlim=c(0,9.25)),
-                     list(last.qp,cex=0.75,dl.trans(x=x+0.1))))
+                     list(cex=1.5,last.qp,dl.trans(x=x+0.1))))
 }  
 ## some data from clustering algorithms
 data(iris.l1.cluster,package="directlabels")
-p <- ggplot(iris.l1.cluster,aes(lambda,alpha,group=row,colour=Species))+
+ilc <- transform(iris.l1.cluster,coefficient=alpha)
+p <- ggplot(ilc,aes(lambda,coefficient,group=row,colour=Species))+
   geom_line(alpha=1/4)+
   facet_grid(col~.)
 p2 <- p+xlim(-0.0025,max(iris.l1.cluster$lambda))
 print(direct.label(p2,list("first.points","get.means","first.qp")))
+
 data(normal.l2.cluster,package="directlabels")
 p <- ggplot(normal.l2.cluster$path,aes(x,y))+
   geom_path(aes(group=row),colour="grey")+
@@ -189,6 +206,7 @@ print(direct.label(p))
 print(direct.label(p,"extreme.grid"))
 ## respect the color scale. these should look the same:
 print(direct.label(p+scale_colour_manual(values=rainbow(8))))
-print(direct.label(p)+scale_colour_manual(values=rainbow(8),legend=FALSE))
+print(direct.label(p)+scale_colour_manual(values=rainbow(8),guide="none"))
+
 lattice.options(oldopt)
 }

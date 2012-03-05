@@ -37,10 +37,20 @@ dl.combine <- structure(function # Combine output of several methods
   data(BodyWeight,package="nlme")
   library(lattice)
   ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
+  ##ratplot <- qplot(Time,weight,data=BodyWeight,group=Rat,colour=Rat,geom="line",facets=.~Diet)
   both <- dl.combine("first.points","last.points")
-  plot(direct.label(ratplot,"both"))
-  ## can also do this by repeatedly calling direct.label 
-  plot(direct.label(direct.label(ratplot,"last.points"),"first.points"))
+  rat.both <- direct.label(ratplot,"both")
+  print(rat.both)
+##   grid.edit(gPath("panel-3-3",".*","GRID.dlgrob"),
+##             method=list(cex=2,fontfamily="bold","both"),
+##             grep=TRUE)
+  ## can also do this by repeatedly calling direct.label
+  rat.repeated <-
+    direct.label(direct.label(ratplot,"last.points"),"first.points")
+  print(rat.repeated)
+##   grid.edit(gPath("panel-3-5",".*","GRID.dlgrob.first.points"),
+##             method=list(cex=2,fontfamily="bold","both"),
+##             grep=TRUE)
   library(ggplot2)
   rp2 <- qplot(Time,weight,data=BodyWeight,geom="line",facets=.~Diet,colour=Rat)
   print(direct.label(direct.label(rp2,"last.points"),"first.points"))
@@ -360,8 +370,20 @@ ignore.na <- function(d,...){
 qp.labels <- function(var,spacer)function(d,...){
   if(!spacer%in%names(d))stop("need to have calculated ",spacer)
   require(quadprog)
+  ## calculate a tiebreaker for the ordering. If we are doing a
+  ## standard lineplot, then we can calculate where the line is going
+  ## by looking at the nearest point. TODO: how to tiebreak in other
+  ## situations, like lasso.labels?
+  d$tiebreaker <- if(var=="y"){
+    sapply(seq_along(d$groups),function(i){
+      others <- subset(attr(d,"orig.data"),groups==d$groups[i] & x!=d$x[i])
+      others[which.min(abs(others$x-d$x[i])),"y"]
+    })
+  }else{
+    1
+  }
   ## sorts data so that target_1 <= target_2 <= ... <= target_n
-  d <- d[order(d[,var]),]
+  d <- d[order(d[,var],d$tiebreaker),]
   target <- d[,var]
   k <- nrow(d)
   D <- diag(rep(1,k))
@@ -421,15 +443,16 @@ inside <- function
 
 dl.summarize <- function
 ### summarize which preserves important columns for direct labels.
-(d,
+(OLD,
 ### data frame
  ...
  ){
-  df <- unique(transform(d,...))
-  to.copy <- names(d)[!names(d)%in%names(df)]
+  rownames(OLD) <- NULL
+  NEW <- unique(transform(OLD,...))
+  to.copy <- names(OLD)[!names(OLD)%in%names(NEW)]
   for(N in to.copy)
-    df[,N] <- d[,N]
-  df
+    NEW[,N] <- OLD[,N]
+  NEW
 }
 
 perpendicular.lines <- function
@@ -489,7 +512,7 @@ gapply <- function
  method,
 ### Positioning Method to apply to every group separately.
  ...,
-### additional arguments for FUN.
+### additional arguments, passed to Positioning Methods.
  groups="groups"
 ### can also be useful for piece column.
  ){
@@ -674,7 +697,14 @@ apply.method <- function # Apply a Positioning Method
 ### Named arguments, passed to Positioning Functions.
  debug=FALSE
  ){
-  attr(d,"orig.data") <- d
+  attr(d,"orig.data") <- d ##DONT DELETE: if the first Positioning
+                           ##Method needs orig.data, this needs to be
+                           ##here!
+  for(must.have in c("x","y","groups")){
+    if(! must.have %in% names(d)){
+      stop("data must have a column named ",must.have)
+    }
+  }
   if(!is.list(method))method <- list(method)
   isconst <- function(){
     m.var <- names(method)[1]
@@ -685,7 +715,6 @@ apply.method <- function # Apply a Positioning Method
   while(length(method)){
     if(debug)print(method[1])##not [[1]] --- named items!
     ## Resolve any names or nested lists
-    is.trans <- FALSE
     while(islist()||isref()){
       if(islist()){
         method <- c(method[[1]],method[-1])
@@ -694,15 +723,22 @@ apply.method <- function # Apply a Positioning Method
           warning("using first element of character vector")
           method[[1]] <- method[[1]][1]
         }
-        is.trans <- grepl("^trans[.]",method[[1]])
         method <- c(get(method[[1]]),method[-1])
       }
     }
     if(isconst())
       d[[names(method)[1]]] <- method[[1]]
-    else{
+    else{ #should be a Positioning Function
       old <- d
+      group.dfs <- split(d,d$groups)
       d <- method[[1]](d,debug=debug,...)
+      for(g in unique(d$groups)){
+        group.specific <- only.unique.vals(group.dfs[[g]])
+        to.restore <- names(group.specific)[!names(group.specific)%in%names(d)]
+        for(N in to.restore){
+          d[d$groups==g,N] <- group.specific[group.specific$groups==g,N]
+        }
+      }
       attr(d,"orig.data") <-
         if(is.null(attr(old,"orig.data")))old
         else attr(old,"orig.data")
@@ -715,6 +751,14 @@ apply.method <- function # Apply a Positioning Method
   d
 ### The final data frame returned after applying all of the items in
 ### the Positioning Method list.
+}
+
+### Create a 1-row data.frame consisting of only the columns for which
+### there is only 1 unique value.
+only.unique.vals <- function(d,...){
+  unique.vals <- lapply(d,unique)
+  n.vals <- sapply(unique.vals,length)
+  do.call(data.frame,unique.vals[n.vals==1])
 }
 
 ### to hard-code label positions...

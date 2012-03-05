@@ -18,19 +18,21 @@ geom_dl <- structure(function
 ### passed to GeomDirectLabel$new. ie stat= position= debug=
  ){
   require(ggplot2)
+  require(proto)
   ## Geom for direct labeling that creates dlgrobs in the draw()
   ## method.
-  GeomDirectLabel <- proto(Geom, {
+  GeomDirectLabel <- proto(ggplot2:::Geom, {
     draw_groups <- function(., ...) .$draw(...)
     draw <- function(., data, scales, coordinates,
                      method=NULL,debug=FALSE, ...) {
       data$rot <- as.integer(data$angle)
       data$groups <- data$label
-      dlgrob(subset(coordinates$transform(data, scales),select=-group),
+      axes2native <- function(data){
+        coord_transform(coordinates,data,scales)
+      }
+      dlgrob(subset(axes2native(data),select=-group),
              method,debug=debug,
-             axes2native=function(data){
-               coordinates$transform(data, scales)
-             })
+             axes2native=axes2native)
     }
     draw_legend <- function(.,data,...){
       data <- aesdefaults(data,.$default_aes(),list(...))
@@ -60,7 +62,7 @@ geom_dl <- structure(function
   ## this is what direct.label is doing internally:
   labeled <- leg+
     geom_dl(aes(label=demographic),list("last.points",rot=30))+
-    scale_colour_discrete(legend=FALSE)
+    scale_colour_discrete(guide="none")
   print(labeled)
   ## no color, just direct labels!
   p <- ggplot(vad,aes(deaths,age))+
@@ -69,15 +71,15 @@ geom_dl <- structure(function
   print(p)
   ## add color:
   p+aes(colour=demographic)+
-    scale_colour_discrete(legend=FALSE)
+    scale_colour_discrete(guide="none")
   ## add linetype:
   p+aes(linetype=demographic)+
-    scale_linetype(legend=FALSE)
+    scale_linetype(guide="none")
   ## no color, just direct labels
   data(BodyWeight,package="nlme")
   bwbase <- ggplot(BodyWeight,aes(Time,weight,label=Rat))+
     geom_line(aes(group=Rat))+
-    facet_grid(~Diet)
+    facet_grid(.~Diet)
   bw <- bwbase+geom_dl(method="last.qp")
   print(bw)
   ## add some more direct labels
@@ -85,7 +87,7 @@ geom_dl <- structure(function
   print(bw2)
   ## add color
   colored <- bw2+aes(colour=Rat)+
-    scale_colour_discrete(legend=FALSE)
+    scale_colour_discrete(guide="none")
   print(colored)
   ## or just use direct.label if you use color:
   direct.label(bwbase+aes(colour=Rat),dl.combine("first.qp","last.qp"))
@@ -96,7 +98,7 @@ geom_dl <- structure(function
   giris.labeled <- giris+
     geom_dl(aes(label=Species),method="smart.grid")+
     scale_shape_manual(values=c(setosa=1,virginica=6,versicolor=3),
-                       legend=FALSE)
+                       guide="none")
   ##png("~/R/directlabels/www/scatter-bw-ggplot2.png",h=503,w=503)
   print(giris.labeled)
   ##dev.off()
@@ -111,10 +113,9 @@ direct.label.ggplot <- function
  debug=FALSE
 ### Show debug output?
  ){
-  require(proto)
   require(ggplot2)
-  SCALE <- scale_colour_discrete
-  ## First look through layers for a colour aesthetic
+  ## First look through layers for a colour aesthetic, TODO: look for
+  ## fill aesthetic as well!
   maps <- lapply(p$layers,function(L){
     m <- p$mapping
     m[names(L$mapping)] <- L$mapping
@@ -126,23 +127,13 @@ direct.label.ggplot <- function
     i <- which(has.colour)[1] ##just pick the first one
     L <- p$layers[[i]]
     colvar <- as.character(cvars[[i]])
-    ## FIXME: kind of a hack.
-    if(colvar=="..level..")SCALE <- scale_colour_continuous
-    ##colvar <- gsub("^[.][.](.*)[.][.]$","\\1",colvar)
   }else stop("Need colour aesthetic to infer default direct labels.")
   ## Try to figure out a good default based on the colored geom
   geom <- L$geom$objname
   if(is.null(method))method <- default.picker("ggplot")
   dlgeom <- geom_dl(aes_string(label=colvar,colour=colvar),method,
                     stat=L$stat,debug=debug,data=L$data)
-  scale.types <- sapply(p$scales$.scales,"[[",".output")
-  scale.i <- which("colour"==scale.types)
-  if(length(scale.i)){
-    p$scales$.scales[[scale.i[1]]]$legend <- FALSE
-  }else{
-    p <- p+SCALE(legend=FALSE)
-  }
-  p+dlgeom
+  p+dlgeom+guides(color="none")
 ### The ggplot object with direct labels added.
 }
 

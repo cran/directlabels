@@ -2,10 +2,7 @@
 \alias{extreme.points}
 \title{extreme points}
 \description{Label the points furthest from the middle for each group.}
-\usage{
-extreme.points(d,
-...)
-}
+\usage{extreme.points(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -15,7 +12,7 @@ extreme.points(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

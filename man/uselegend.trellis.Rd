@@ -2,10 +2,7 @@
 \alias{uselegend.trellis}
 \title{uselegend trellis}
 \description{Add a legend to a trellis plot, for comparison.}
-\usage{
-uselegend.trellis(p,
-...)
-}
+\usage{uselegend.trellis(p, ...)}
 \arguments{
   \item{p}{The trellis object.}
   \item{\dots}{Ignored.}
@@ -13,7 +10,7 @@ uselegend.trellis(p,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

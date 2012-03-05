@@ -53,10 +53,15 @@ direct.label.trellis <- function
  debug=FALSE
 ### Show debug output?
  ){
-  old.panel <- if(class(p$panel)=="character")get(p$panel) else p$panel
+  #print(p$panel)
+  old.panel <- if(is.character(p$panel))get(p$panel) else p$panel
+  #print(old.panel)
   lattice.fun.name <- paste(p$call[[1]])
   p$panel <-
     function(panel.groups=paste("panel.",lattice.fun.name,sep=""),...){
+      ## TODO: redo this interface... to fix (1) lattice problem with
+      ## custom specified color labels and (2) name clash with method
+      ## from xYplot which I suppose should work.
       panel.superpose.dl(panel.groups=panel.groups,
                          .panel.superpose=old.panel,
                          method=method,
@@ -83,9 +88,8 @@ panel.superpose.dl <- structure(function
 ### To be parsed for default labeling method, and passed to
 ### panel.superpose.
  method=NULL,
-### Method for direct labeling as described in ?label.positions. NULL
-### indicates to choose a Positioning Method based on the
-### panel.groups function.
+### Positioning Method for direct labeling. NULL indicates to choose a
+### Positioning Method based on the panel.groups function.
  .panel.superpose=panel.superpose,
 ### The panel function to use for drawing data points.
  type="p",
@@ -222,7 +226,7 @@ defaultpf.trellis <- function
     if(nlevels(groups)==2)"lines2" else {
       if(require(quadprog))"maxvar.qp"
       else {
-        warning("install quadprog package for smarter labeling")
+        warning("install quadprog package for labels that do not overlap")
         "maxvar.points"
       }
     }
@@ -236,6 +240,7 @@ defaultpf.trellis <- function
          xyplot=if("p"%in%type)"smart.grid" else ldefault(),
          densityplot="top.bumptwice",
          rug="rug.mean",
+         xyplot.zoo=ldefault(),
          stop("No default direct label placement method for '",
               lattice.fun.name,"'.\nPlease specify method."))
 }

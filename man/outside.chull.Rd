@@ -4,10 +4,7 @@
 \description{Calculate closest point on the convex hull and put it outside that
 point. Assume d is the center for each point cloud and then use
 orig.data to calculate hull.}
-\usage{
-outside.chull(d,
-...)
-}
+\usage{outside.chull(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -17,7 +14,7 @@ outside.chull(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -6,13 +6,8 @@ a custom grid graphics display based on lattice and/or ggplot2
 output. This is possible because the direct.label function is
 generic. Plots will be on the columns and positioning methods will
 be on the rows.}
-\usage{
-dlcompare(plots,
-pos.funs,
-rects = TRUE,
-row.items = "plots",
-debug = FALSE)
-}
+\usage{dlcompare(plots, pos.funs, rects = TRUE, row.items = "plots", 
+    debug = FALSE)}
 \arguments{
   \item{plots}{List of ggplot2 or lattice plots. List names will be used to
 annotate the plot.}
@@ -27,7 +22,7 @@ columns. Otherwise, do the opposite.}
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
@@ -36,13 +31,16 @@ columns. Otherwise, do the opposite.}
 library(lattice)
 library(ggplot2)
 oldopt <- lattice.options(panel.error=NULL)
+
 dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
+require(reshape2)
 ddf <- melt(as.data.frame(dts),id="time")
 names(ddf) <- c("time","sex","deaths")
 plots <- list(lattice=
               xyplot(deaths~time,ddf,groups=sex,type="l",xlim=c(-15,80)),
               ggplot2=
               qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-10,80))
+
 if(names(dev.cur())!="postscript"){##to avoid error on pkg check
   ## Try some more exotic labeling options.
   exotic <- list("last.points",
@@ -60,6 +58,7 @@ dlcompare(plots,pos.funs)
 dlcompare(plots,pos.funs,rects=FALSE) ## hide the grid
 dlcompare(plots,pos.funs,rects=FALSE,row.items="posfuns") ## exchange axes
 ##dev.off();system("xpdf compare.pdf")
+
 ## All of these subsets should produce valid comparison plots.
 dlcompare(plots[1],pos.funs[1])
 dlcompare(plots[1],pos.funs)
@@ -70,6 +69,7 @@ not.named <- structure(named.funs,names=NULL)
 unlabeled.plots <- structure(plots,names=NULL)
 dlcompare(plots,mixed.funs)
 dlcompare(plots,mixed.funs[3])
+
 data(BodyWeight,package="nlme")
 ratplot <- xyplot(weight~Time|Diet,BodyWeight,
                   groups=Rat,type="l",layout=c(3,1))
@@ -90,6 +90,7 @@ s.methods <- list("empty.grid","smart.grid")
 dlcompare(scatters[1:2],s.methods)
 dlcompare(scatters[2:3],s.methods)
 ##dev.off();system("xpdf scattercompare.pdf")
+
 myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
   require(MASS)
   fit <- lm.ridge(f,data,lambda=lambda)
@@ -128,6 +129,7 @@ pfuns <- list("legend","direct labels"=
                    calc.boxes,draw.rects))
 dlcompare(list(p),pfuns,rects=FALSE,row.items="posfuns")
 dlcompare(list(p,p2),pfuns[1:2],rects=FALSE)
+
 vad <- as.data.frame.table(VADeaths)
 names(vad) <- c("age","demographic","deaths")
 ## color + legend

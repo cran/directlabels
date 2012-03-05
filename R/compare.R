@@ -75,6 +75,7 @@ dlcompare <- structure(function # Direct label comparison plot
   oldopt <- lattice.options(panel.error=NULL)
 
   dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
+  require(reshape2)
   ddf <- melt(as.data.frame(dts),id="time")
   names(ddf) <- c("time","sex","deaths")
   plots <- list(lattice=

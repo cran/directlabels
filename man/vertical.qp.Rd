@@ -3,9 +3,7 @@
 \title{vertical qp}
 \description{Make a Positioning Function from a set of points on a vertical
 line that will be spaced out using qp.labels}
-\usage{
-vertical.qp(M)
-}
+\usage{vertical.qp(M)}
 \arguments{
   \item{M}{
 }
@@ -13,7 +11,7 @@ vertical.qp(M)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

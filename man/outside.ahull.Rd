@@ -3,10 +3,7 @@
 \title{outside ahull}
 \description{Calculate closest point on the alpha hull with size of the boxes,
 and put it outside that point.}
-\usage{
-outside.ahull(d,
-...)
-}
+\usage{outside.ahull(d, ...)}
 \arguments{
   \item{d}{
 }
@@ -16,7 +13,7 @@ outside.ahull(d,
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
