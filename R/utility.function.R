@@ -309,11 +309,12 @@ calc.borders <- function
 ### to have previously called calc.boxes. Does not edit the data
 ### frame.
 draw.rects <- function(d,...){
+  if(is.null(d$box.color))d$box.color <- "black"
   for(i in 1:nrow(d)){
     with(d[i,],{
       grid.lines(c(left,left,right,right,left),
                  c(bottom,top,top,bottom,bottom),
-                 "cm",gp=gpar(col="grey"))
+                 "cm",gp=gpar(col=d$box.color))
     })
   }
   d
@@ -469,7 +470,7 @@ perpendicular.lines <- function
 ### ignored.
  ){
   if(length(unique(d$groups))==1)return(extreme.points(d))
-  means <- rename(get.means(d),list(x="mx",y="my",groups="groups"))
+  means <- with(get.means(d),data.frame(mx=x,my=y,groups))
   big <- merge(d,means,by="groups")
   fit <- lm(my~mx,means)
   b <- coef(fit)[1]
@@ -480,15 +481,12 @@ perpendicular.lines <- function
                     d=sqrt((x-x1)^2+(y-y1)^2),
                     dm=sqrt((x-mx)^2+(y-my)^2))
   big5 <- transform(big4,ratio=d/dm)
-  winners <- gapply(big5,subset,
-                   subset=seq_along(ratio)==which.min(ratio))
+  winners <- gapply(big5,function(d,...)d[which.min(d$ratio),])
   ## gives back a function of a line that goes through the designated center
   f <- function(v)function(x){
     r <- means[means$groups==v,]
     -1/m*(x-r$mx)+r$my
   }
-  ##dd <- gapply(means,summarise,x=x+sdx*seq(0,-2,l=5)[-1])
-  ##dd$y <- mdply(dd,function(groups,x)f(groups)(x))$x
   if(debug){
     ## myline draws a line over the range of the data for a given fun F
     myline <- function(F)
@@ -519,7 +517,7 @@ gapply <- function
   stopifnot(is.data.frame(d))
   dfs <- split(d,as.character(d[[groups]]))
   f <- function(d,...){
-    res <- apply.method(method,d,...)
+    res <- apply.method(method,d,columns.to.check=c("x","y"),...)
     res[[groups]] <- d[[groups]][1]
     res
   }
@@ -676,6 +674,21 @@ dens.gradient <- function(d,...){
   d
 }
 
+check.for.columns <- function
+### Stop if a data.frame does not have some columns.
+(d,
+### data.frame to check.
+ must.have
+### column names to check.
+ ){
+  stopifnot(is.character(must.have))
+  for(N in must.have){
+    if(! N %in% names(d)){
+      stop("data must have a column named ",N)
+    }
+  }
+}
+
 apply.method <- function # Apply a Positioning Method
 ### Run a Positioning Method list on a given data set. This function
 ### contains all the logic for parsing a Positioning Method and
@@ -693,6 +706,9 @@ apply.method <- function # Apply a Positioning Method
 ### frame is used to draw a direct label.
  d,
 ### Data frame to which we apply the Positioning Method.
+ columns.to.check=c("x","y","groups"),
+### After applying each Positioning Function, we check for the
+### presence of these columns, and if not found we stop with an error.
  ...,
 ### Named arguments, passed to Positioning Functions.
  debug=FALSE
@@ -700,11 +716,7 @@ apply.method <- function # Apply a Positioning Method
   attr(d,"orig.data") <- d ##DONT DELETE: if the first Positioning
                            ##Method needs orig.data, this needs to be
                            ##here!
-  for(must.have in c("x","y","groups")){
-    if(! must.have %in% names(d)){
-      stop("data must have a column named ",must.have)
-    }
-  }
+  check.for.columns(d,columns.to.check)
   if(!is.list(method))method <- list(method)
   isconst <- function(){
     m.var <- names(method)[1]
@@ -714,6 +726,7 @@ apply.method <- function # Apply a Positioning Method
   isref <- function()(!isconst())&&is.character(method[[1]])
   while(length(method)){
     if(debug)print(method[1])##not [[1]] --- named items!
+    ##browser()
     ## Resolve any names or nested lists
     while(islist()||isref()){
       if(islist()){
@@ -731,12 +744,16 @@ apply.method <- function # Apply a Positioning Method
     else{ #should be a Positioning Function
       old <- d
       group.dfs <- split(d,d$groups)
+      group.specific <- lapply(group.dfs,only.unique.vals)
+      to.restore <- Reduce(intersect,lapply(group.specific,names))
       d <- method[[1]](d,debug=debug,...)
-      for(g in unique(d$groups)){
-        group.specific <- only.unique.vals(group.dfs[[g]])
-        to.restore <- names(group.specific)[!names(group.specific)%in%names(d)]
-        for(N in to.restore){
-          d[d$groups==g,N] <- group.specific[group.specific$groups==g,N]
+      check.for.columns(d,columns.to.check)
+      ## do not restore if they are present in the returned list!
+      to.restore <- to.restore[!to.restore %in% names(d)]
+      for(N in to.restore){
+        d[[N]] <- NA
+        for(g in unique(d$groups)){
+          d[d$groups==g,N] <- group.specific[[g]][,N]
         }
       }
       attr(d,"orig.data") <-

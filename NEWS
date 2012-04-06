@@ -1,5 +1,10 @@
 TODO
 
+image labels: draw a grob on screen instead of assuming it is
+text. Have a toggle for drawing images and/or text. Handle both in a
+uniform way in Positioning Methods by just asking for the grob size
+instead of the text size.
+
 Get rid of dl.summarize and gapply.fun for simplicity?
 
 how to automatically adjust axes to make direct labels immediately
@@ -17,6 +22,25 @@ objects.
 
 contourplot labels as in lattice::panel.contourplot or C source code
 in r-source/src/main/plot3d.c
+
+From Doug Peterson: Side point: Something else I noticed when playing
+with this - if any kind of bin adjustment is used within the
+stat_contour (e.g., stat_contour(aes(colour=..level..), binwidth=50)
+directlabels ignores the binned contour lines and labels everything
+(=whatever default contour lines are produced, even if not plotted!).
+
+2.5 ---
+
+bugfix for ggplot2 geom_line picker. before we were not actually
+checking the number of levels of the groups.
+
+bugfixes for scatterplots using perpendicular.grid and [ac]hull.grid.
+
+new check.for.columns function to make sure the data.frames returned
+by Positioning Functions in apply.method have the necessary info.
+
+bugfix for apply.method restore invariant columns for each group after
+applying Positioning Method algorithm.
 
 2.4 --- 5 March 2012
 

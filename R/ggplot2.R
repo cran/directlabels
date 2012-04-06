@@ -143,9 +143,9 @@ defaultpf.ggplot <- function
   switch(geom,
          density="top.bumptwice",
          line={
-           d <- L[[colvar]]
-           if(is.null(d))d <- p[[colvar]]
-           if(nlevels(d[,colvar])==2)"lines2" else "maxvar.qp"
+           groups <- L$data[[colvar]]
+           if(is.null(groups))groups <- p$data[[colvar]]
+           if(nlevels(groups)==2)"lines2" else "maxvar.qp"
          },
          point="smart.grid",
          path="bottom.pieces",

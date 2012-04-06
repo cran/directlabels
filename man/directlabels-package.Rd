@@ -5,7 +5,7 @@
 \description{The directlabels package provides an extensible framework
 for automatically placing direct labels onto multicolor lattice or
 ggplot2 plots.
-It includes heuristics for examining "lattice" and "ggplot" objects
+It includes heuristics for examining "trellis" and "ggplot" objects
 and inferring an appropriate Positioning Method for placing the
 labels. Furthermore, the design of directlabels makes it simple to
 create Positioning Methods for specific plots or libraries of
@@ -14,13 +14,13 @@ portable Positioning Methods that can be re-used.}
 \tabular{ll}{Package: \tab directlabels\cr
 Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
 Author: \tab Toby Dylan Hocking\cr
-Version: \tab 2.3\cr
+Version: \tab 2.5\cr
 License: \tab GPL-3\cr
 Title: \tab Direct labels for multicolor plots in lattice or ggplot2\cr
 URL: \tab http://directlabels.r-forge.r-project.org/\cr
 LazyData: \tab true\cr
 Suggests: \tab ks, MASS, inlinedocs, quadprog, ggplot2 (>= 0.9.0),
-lattice, alphahull, reshape2,
+lattice, alphahull, reshape2, nlme,
 ElemStatLearn, proto, lars, mlmRev, latticeExtra\cr
 Depends: \tab grid\cr
 Collate: \tab utility.function.R compare.R dotplot.R lineplot.R

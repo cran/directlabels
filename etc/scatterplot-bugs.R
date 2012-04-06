@@ -1,0 +1,13 @@
+data(mpg,package="ggplot2")
+m <- lm(cty~displ,data=mpg)
+mpgf <- fortify(m,mpg)
+library(lattice)
+library(latticeExtra)
+library(directlabels)
+library(ggplot2)
+data(mpg,package="ggplot2")
+p <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
+      main="Fuel efficiency depends on car size")
+direct.label(p,perpendicular.grid)
+direct.label(p,"ahull.grid")
+direct.label(p,"chull.grid")

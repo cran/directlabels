@@ -222,6 +222,7 @@ x = rnorm(n)*10
 y = rnorm(n)*10
 plot(x,y, col="red",pch=20)
 pointLabel(x, y, as.character(round(x,5)), offset = 0, allowSmallOverlap = F,cex=.7, trace = TRUE)
+
 pointLabel(x, y, as.character(round(x,5)), offset = 0, allowSmallOverlap = F,cex=.7, method = "GA", doPlot=F, trace = TRUE)
 
 #plot(x,y, col="red",pch=20)
