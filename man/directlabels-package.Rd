@@ -14,12 +14,12 @@ portable Positioning Methods that can be re-used.}
 \tabular{ll}{Package: \tab directlabels\cr
 Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
 Author: \tab Toby Dylan Hocking\cr
-Version: \tab 2.5\cr
+Version: \tab 2.6\cr
 License: \tab GPL-3\cr
 Title: \tab Direct labels for multicolor plots in lattice or ggplot2\cr
 URL: \tab http://directlabels.r-forge.r-project.org/\cr
 LazyData: \tab true\cr
-Suggests: \tab ks, MASS, inlinedocs, quadprog, ggplot2 (>= 0.9.0),
+Suggests: \tab ks, MASS, inlinedocs, quadprog, ggplot2 (>= 0.9.1),
 lattice, alphahull, reshape2, nlme,
 ElemStatLearn, proto, lars, mlmRev, latticeExtra\cr
 Depends: \tab grid\cr

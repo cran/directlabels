@@ -131,8 +131,13 @@ direct.label.ggplot <- function
   ## Try to figure out a good default based on the colored geom
   geom <- L$geom$objname
   if(is.null(method))method <- default.picker("ggplot")
+  data <- if( (!is.null(L$data)) && (length(L$data) > 0) ){
+    L$data
+  }else{
+    NULL
+  }
   dlgeom <- geom_dl(aes_string(label=colvar,colour=colvar),method,
-                    stat=L$stat,debug=debug,data=L$data)
+                    stat=L$stat,debug=debug,data=data)
   p+dlgeom+guides(color="none")
 ### The ggplot object with direct labels added.
 }
