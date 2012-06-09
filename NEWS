@@ -29,7 +29,15 @@ stat_contour (e.g., stat_contour(aes(colour=..level..), binwidth=50)
 directlabels ignores the binned contour lines and labels everything
 (=whatever default contour lines are produced, even if not plotted!).
 
-2.5 ---
+2.6 --- 5 June 2012
+
+In ggplot2 >= 0.9.1, layer$data is an empty list of class "waiver" in
+the ggplot object, but geom_xxx(data=waiver) results in an error, so
+we check for this now and use data=NULL when we find a waiver.
+
+2.5 --- 6 April 2012
+
+draw.rects with configurable color, default black.
 
 bugfix for ggplot2 geom_line picker. before we were not actually
 checking the number of levels of the groups.
