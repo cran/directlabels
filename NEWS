@@ -7,15 +7,12 @@ instead of the text size.
 
 Get rid of dl.summarize and gapply.fun for simplicity?
 
-how to automatically adjust axes to make direct labels immediately
-legible? For multipanel plots you would have to adjust all the scales!
-
 method for .zoo plots?
 
 handling custom # of bins/custom densityplot params?
 
 problems with plotting color labels in lattice when col= is specified,
-see etc/individual.R
+see etc/individual.R, and gabor.R
 
 see etc/xYplot.R for a problem with plotting some weird trellis
 objects.
@@ -28,6 +25,61 @@ with this - if any kind of bin adjustment is used within the
 stat_contour (e.g., stat_contour(aes(colour=..level..), binwidth=50)
 directlabels ignores the binned contour lines and labels everything
 (=whatever default contour lines are produced, even if not plotted!).
+
+See etc/area.R for an example of using fill in area plots.
+
+2.9 --- 25 Sep 2012
+
+Delete several examples to reduce timings.
+
+2.8 --- 13-29 Aug 2012
+
+Attempted submission to CRAN 25 Sept 2012.
+
+top.points uses xlimits to avoid labels going off the left and right
+sides.
+
+draw.rects: use grid.polygon instead of grid.lines so we can fill the
+box. set the column fill="transparent" if you don't want the
+background.
+
+empty.grid: only consider boxes for which the class of the closest
+point is the target direct label. This avoids weird problems that can
+happen on smaller plots, where sometimes labels would appear next to
+another class.
+
+qp.labels: reduce text size if there is not enough space to read all
+the labels. You can still increase the xlim and ylim if you want to
+labels to render at full size. This is the best fix I could think of
+for the following long-standing issue:
+
+how to automatically adjust axes to make direct labels immediately
+legible? For multipanel plots you would have to adjust all the scales!
+
+qp.labels: respect any predefined vjust for overlap calculation, by
+calculating top and bottom before and using these in the QP.
+
+qp.labels takes a new argument limits which specifies the lower limit
+for the bottom of the first label and the upper limit of the top of
+the last label.
+
+API change: qp.labels takes a function order.labels instead of
+tiebreak.
+
+Bugfix: pass on ... args in dl.combine.
+
+Bugfix: if only 1 row to call to qp.labels, then just return it.
+
+Bugfix: calc.boxes does not use transform since that was ignoring the
+cex specified.
+
+2.7 --- 12 July 2012
+
+New lasso.labels Positioning Method that applies the QP solver to both
+the top and bottom labels.
+
+New tiebreaker argument for qp.labels so we can do that for top.qp as
+well.
 
 2.6 --- 5 June 2012
 

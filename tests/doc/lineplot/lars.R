@@ -13,5 +13,5 @@ names(path)[1:3] <- c("step","variable","standardized.coef")
 library(ggplot2)
 ggplot(path,aes(arclength,standardized.coef,colour=variable))+
   geom_line(aes(group=variable))+
-  opts(title="LASSO path for prostate cancer data calculated using the LARS")+
+  ggtitle("LASSO path for prostate cancer data calculated using the LARS")+
   xlim(0,20)
