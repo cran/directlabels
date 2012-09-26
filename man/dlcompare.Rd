@@ -32,6 +32,7 @@ library(lattice)
 library(ggplot2)
 oldopt <- lattice.options(panel.error=NULL)
 
+## Compare two plots of the same data using lattice and ggplot2.
 dts <- cbind(male=mdeaths,female=fdeaths,time=1:length(mdeaths))
 require(reshape2)
 ddf <- melt(as.data.frame(dts),id="time")
@@ -41,8 +42,9 @@ plots <- list(lattice=
               ggplot2=
               qplot(time,deaths,data=ddf,colour=sex,geom="line")+xlim(-10,80))
 
-if(names(dev.cur())!="postscript"){##to avoid error on pkg check
-  ## Try some more exotic labeling options.
+if(names(dev.cur())!="postscript"){##to avoid error on pkg check Try
+  ## Use some exotic labeling options with different rotation, font
+  ## face, family, and alpha transparency.
   exotic <- list("last.points",
                  rot=c(0,180),
                  fontsize=c(10,20),
@@ -52,90 +54,12 @@ if(names(dev.cur())!="postscript"){##to avoid error on pkg check
   dlcompare(plots,list(exotic))
 }
 
-pos.funs <- list("first.points","lines2")
-##pdf("compare.pdf",width=10,height=10)
-dlcompare(plots,pos.funs)
-dlcompare(plots,pos.funs,rects=FALSE) ## hide the grid
-dlcompare(plots,pos.funs,rects=FALSE,row.items="posfuns") ## exchange axes
-##dev.off();system("xpdf compare.pdf")
-
-## All of these subsets should produce valid comparison plots.
-dlcompare(plots[1],pos.funs[1])
-dlcompare(plots[1],pos.funs)
-dlcompare(plots,pos.funs[1])
-named.funs <- list(first.points=first.points,lines2=lines2)
-mixed.funs <- list("first.points",lines2=lines2,last.points)
-not.named <- structure(named.funs,names=NULL)
-unlabeled.plots <- structure(plots,names=NULL)
-dlcompare(plots,mixed.funs)
-dlcompare(plots,mixed.funs[3])
-
+## Compare a legend with direct labels on the same plot.
 data(BodyWeight,package="nlme")
-ratplot <- xyplot(weight~Time|Diet,BodyWeight,
-                  groups=Rat,type="l",layout=c(3,1))
-##   ggrat <- qplot(Time,weight,data=BodyWeight,
-##                  colour=Rat,geom="line",facets=.~Diet)
-##   png("~/R/directlabels/www/rat-ggplot2-firstlast.png",h=400,w=900)
-##   dlcompare(list(ggrat+ylim(130,max(BodyWeight$weight))),
-##             list("first.qp","last.qp"),row.items="pfs",rects=FALSE)
-##   dev.off()
-## Compare scatterplot labeling methods.
-scatters <-
-  list(xyplot(jitter(cty)~jitter(hwy),mpg,groups=class,aspect=1),
-       xyplot(jitter(Sepal.Length)~jitter(Petal.Length),iris,groups=Species),
-       qplot(jitter(Petal.Length),jitter(Sepal.Length),
-             data=iris,colour=Species))
-##pdf("scattercompare.pdf",width=10,height=5)
-s.methods <- list("empty.grid","smart.grid")
-dlcompare(scatters[1:2],s.methods)
-dlcompare(scatters[2:3],s.methods)
-##dev.off();system("xpdf scattercompare.pdf")
-
-myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
-  require(MASS)
-  fit <- lm.ridge(f,data,lambda=lambda)
-  X <- data[-which(names(data)==as.character(f[[2]]))]
-  Xs <- svd(scale(X)) ## my d's should come from the scaled matrix
-  dsq <- Xs$d^2
-  ## make the x axis degrees of freedom
-  df <- sapply(lambda,function(l)sum(dsq/(dsq+l)))
-  D <- data.frame(t(fit$coef),lambda,df) # scaled coefs
-  molt <- melt(D,id=c("lambda","df"))
-  ## add in the points for df=0
-  limpts <- transform(subset(molt,lambda==0),lambda=Inf,df=0,value=0)
-  rbind(limpts,molt)
-}
-if(require(ElemStatLearn)){
-  data(prostate)
-  pros <- subset(prostate,train==TRUE,select=-train)
-  m <- myridge(lpsa~.,pros)
-  p <- xyplot(value~df,m,groups=variable,type="o",pch="+",
-              panel=function(...){
-                panel.xyplot(...)
-                panel.abline(h=0)
-              },
-              xlim=c(0,10),
-              auto.key=list(space="right",lines=TRUE,points=FALSE),
-              ylab="scaled coefficients",
-              xlab=expression(df(lambda)))
-  dlcompare(list(p,ratplot),list("last.bumpup","last.qp"))
-}
-## direct labels are way less confusing here
-p2 <- qplot(df,value,data=m,group=variable,colour=variable,
-            geom=c("line","point"))+geom_hline(yintercept=0)+xlim(0,9)
-pfuns <- list("legend","direct labels"=
-              list(cex=2,last.qp,dl.trans(x=x+0.1)),
-              list(cex=c(0.5,1,2,4),last.qp,dl.trans(x=x+0.1),
-                   calc.boxes,draw.rects))
-dlcompare(list(p),pfuns,rects=FALSE,row.items="posfuns")
-dlcompare(list(p,p2),pfuns[1:2],rects=FALSE)
-
-vad <- as.data.frame.table(VADeaths)
-names(vad) <- c("age","demographic","deaths")
-## color + legend
-leg <- ggplot(vad,aes(deaths,age,colour=demographic))+
-  geom_line(aes(group=demographic))
-dlcompare(list(leg),list(list(cex=0.5,"top.qp"),list("last.points",rot=30)))
+ggrat <- qplot(Time,weight,data=BodyWeight,
+               colour=Rat,geom="line",facets=.~Diet)
+pfuns <- list("legend","direct labels"="last.qp")
+dlcompare(list(ggrat),pfuns,rects=FALSE,row.items="posfuns")
 
 lattice.options(oldopt)
 }

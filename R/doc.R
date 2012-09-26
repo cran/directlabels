@@ -71,8 +71,15 @@ dldoc <- function # Make directlabels documentation
     m[i,]$plots[[j]]$code <- rhtmlescape(m[i,]$plots[[j]]$code)
   }
   theme_set(theme_grey())
+
+  version <- read.dcf("DESCRIPTION")[,"Version"]
+  info.lines <- system("svn info -R",intern=TRUE)
+  rev.lines <- grep("Revision",info.lines,value=TRUE)
+  revs <- sub("Revision: ","",rev.lines)
+  latest <- max(as.integer(revs))
+  foot.info <- list(version=version,svn=as.character(latest))
   setwd(file.path("..","..","www","docs"))
-  foot <- paste(readLines("templates/foot.html"),collapse="\n")
+  foot <- filltemplate(foot.info,"templates/foot.html")
   makehtml <- function # Make HTML documentation
   ## Make plots and HTML for documentation website.
   (L
