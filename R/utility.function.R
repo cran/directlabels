@@ -41,7 +41,7 @@ dl.combine <- structure(function # Combine output of several methods
 ### applying each specified Positioning Method.
 },ex=function(){
   ## Simple example: label the start and endpoints
-  data(BodyWeight,package="nlme")
+  library(nlme)
   library(lattice)
   ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
   ##ratplot <- qplot(Time,weight,data=BodyWeight,group=Rat,colour=Rat,geom="line",facets=.~Diet)
@@ -136,7 +136,6 @@ dl.combine <- structure(function # Combine output of several methods
   ## Calculate lasso path, plot and label
   mylasso <- dl.combine(lasso.labels,last.qp)
   if(require(ElemStatLearn)){
-    data(prostate)
     pros <- subset(prostate,select=-train,train==TRUE)
     ycol <- which(names(pros)=="lpsa")
     x <- as.matrix(pros[-ycol])
@@ -150,7 +149,7 @@ dl.combine <- structure(function # Combine output of several methods
   }
 
   if(require(lars)){
-    data(diabetes)
+    data(diabetes,envir=environment())
     dres <- with(diabetes,mylars(x,y))
     P <- xyplot(coef~arclength,dres,groups=variable,type="l")
     plot(direct.label(P,"mylasso"))
@@ -238,19 +237,19 @@ dl.move <- structure(function # Manually move a direct label
   pf
 ### A Positioning Function that moves a label into a good spot.
 },ex=function(){
-  data(mpg,package="ggplot2")
+  library(ggplot2)
   library(lattice)
   scatter <- xyplot(jitter(cty)~jitter(hwy),mpg,groups=class,aspect=1)
   dlcompare(list(scatter),
             list("extreme.grid",
                  `+dl.move`=list(extreme.grid,dl.move("suv",15,15))))
 
-  data(svmtrain,package="directlabels")
-  library(ggplot2)
   p <- qplot(log10(gamma),rate,data=svmtrain,group=data,colour=data,
              geom="line",facets=replicate~nu)
-  dlcompare(list(p+xlim(-8,7)),list("last.points",
-                                    `+dl.move`=list(last.points,dl.move("KIF11",-0.9,hjust=1,vjust=1))))
+  adjust.kif <- dl.move("KIF11",-0.9,hjust=1,vjust=1)
+  dlcompare(list(p+xlim(-8,7)),
+            list("last.points",
+                 `+dl.move`=list(last.points,adjust.kif)))
 })
 
 ### Jitter the label positions.
@@ -305,11 +304,16 @@ calc.borders <- function
  ...
 ### ignored.
  ){
-  hjust <- vjust <- 0.5 ##defaults in case unassigned in d
-  transform(d,
-            top=y+(1-vjust)*h,bottom=y-vjust*h,
-            right=x+(1-hjust)*w,left=x-hjust*w,
-            h=h,w=w)
+  for(just in c("hjust","vjust")){
+    if(!just %in% names(d)){
+      d[,just] <- 0.5
+    }
+  }
+  d$top <- d$y+(1-d$vjust)*d$h
+  d$bottom <- d$y-d$vjust*d$h
+  d$right <- d$x+(1-d$hjust)*d$w
+  d$left <- d$x-d$hjust*d$w
+  d
 }
 
 ### Positioning Function that draws boxes around label positions. Need
@@ -384,38 +388,42 @@ reduce.cex.lr <- structure(function(d,...){
   right <- positive.part(d$right-l[2])
   left <- positive.part(l[1]-d$left)
   w <- d$right-d$left
-  d$cex <- (w-right)/w * (w-left)/w
+  if(is.null(d$cex)){
+    d$cex <- 1
+  }
+  d$cex <- (w-right)/w * (w-left)/w * d$cex
   calc.boxes(d)
 },ex=function(){
-  data(prostate,package="ElemStatLearn")
-  pros <- subset(prostate,select=-train,train==TRUE)
-  ycol <- which(names(pros)=="lpsa")
-  x <- as.matrix(pros[-ycol])
-  y <- pros[[ycol]]
-  library(lars)
-  fit <- lars(x,y,type="lasso")
-  beta <- scale(coef(fit),FALSE,1/fit$normx)
-  arclength <- rowSums(abs(beta))
-  library(reshape2)
-  path <- data.frame(melt(beta),arclength)
-  names(path)[1:3] <- c("step","variable","standardized.coef")
-  library(ggplot2)
-  p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
-    geom_line(aes(group=variable))
+  if(require(ElemStatLearn)){
+    pros <- subset(prostate,select=-train,train==TRUE)
+    ycol <- which(names(pros)=="lpsa")
+    x <- as.matrix(pros[-ycol])
+    y <- pros[[ycol]]
+    library(lars)
+    fit <- lars(x,y,type="lasso")
+    beta <- scale(coef(fit),FALSE,1/fit$normx)
+    arclength <- rowSums(abs(beta))
+    library(reshape2)
+    path <- data.frame(melt(beta),arclength)
+    names(path)[1:3] <- c("step","variable","standardized.coef")
+    library(ggplot2)
+    p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
+      geom_line(aes(group=variable))
 
-  ## the legend isn't very helpful.
-  print(p)
+    ## the legend isn't very helpful.
+    print(p)
 
-  ## add direct labels at the end of the lines.
-  direct.label(p, "last.points")
+    ## add direct labels at the end of the lines.
+    direct.label(p, "last.points")
 
-  ## on my screen, some of the labels go off the end, so we can use
-  ## this Positioning Method to reduce the text size until the labels
-  ## are on the plot.
-  direct.label(p, list("last.points","reduce.cex.lr"))
+    ## on my screen, some of the labels go off the end, so we can use
+    ## this Positioning Method to reduce the text size until the labels
+    ## are on the plot.
+    direct.label(p, list("last.points","reduce.cex.lr"))
 
-  ## the default direct labels for lineplots are similar.
-  direct.label(p)
+    ## the default direct labels for lineplots are similar.
+    direct.label(p)
+  }
 })
 
 qp.labels <- structure(function# Make a Positioning Method for non-overlapping lineplot labels
@@ -430,7 +438,8 @@ qp.labels <- structure(function# Make a Positioning Method for non-overlapping l
  order.labels=function(d)order(d[,target.var]),
 ### Function that takes the data.frame of labels and returns an
 ### ordering, like from the order function. That ordering will be used
-### to reorder the rows.
+### to reorder the rows. This is useful to e.g. break ties when two
+### groups have exactly the same value at the endpoint near the label.
  limits=NULL
 ### Function that takes the data.frame of labels an returns a numeric
 ### vector of length 2. If finite, these values will be used to add
@@ -526,7 +535,6 @@ qp.labels <- structure(function# Make a Positioning Method for non-overlapping l
 ### of the label bounding boxes, as specified by upper.var and
 ### lower.var.
 },ex=function(){
-  data(SegCost,package="directlabels")
   SegCost$error <- factor(SegCost$error,c("FP","FN","E","I"))
   library(ggplot2)
   fp.fn.colors <- c(FP="skyblue",FN="#E41A1C",I="black",E="black")
@@ -657,51 +665,6 @@ dl.summarize <- function
   NEW
 }
 
-perpendicular.lines <- function
-### Draw a line between the centers of each cluster, then draw a
-### perpendicular line for each cluster that goes through its
-### center. For each cluster, return the point the lies furthest out
-### along this line.
-(d,
-### Data frame with groups x y.
- debug=FALSE,
-### If TRUE will draw points at the center of each cluster and some
-### lines that show how the points returned were chosen.
- ...
-### ignored.
- ){
-  if(length(unique(d$groups))==1)return(extreme.points(d))
-  means <- with(get.means(d),data.frame(mx=x,my=y,groups))
-  big <- merge(d,means,by="groups")
-  fit <- lm(my~mx,means)
-  b <- coef(fit)[1]
-  m <- coef(fit)[2]
-  big2 <- transform(big,x1=(mx+x+(my-y)*m)/2)
-  big3 <- transform(big2,y1=m*(x1-x)+y)
-  big4 <- transform(big3,
-                    d=sqrt((x-x1)^2+(y-y1)^2),
-                    dm=sqrt((x-mx)^2+(y-my)^2))
-  big5 <- transform(big4,ratio=d/dm)
-  winners <- gapply(big5,function(d,...)d[which.min(d$ratio),])
-  ## gives back a function of a line that goes through the designated center
-  f <- function(v)function(x){
-    r <- means[means$groups==v,]
-    -1/m*(x-r$mx)+r$my
-  }
-  if(debug){
-    ## myline draws a line over the range of the data for a given fun F
-    myline <- function(F)
-      grid.lines(range(d$x),F(range(d$x)),default.units="cm")
-    ## Then draw a line between these means
-    myline(function(x)m*x+b)
-    ## Then draw perpendiculars that go through each center
-    for(v in means$groups)myline(f(v))
-  }
-  winners[,c("x","y","groups")]
-### Data frame with groups x y, giving the point for each cluster
-### which is the furthest out along the line drawn through its center.
-}
-
 gapply <- function
 ### apply a Positioning Method to every group. works like ddply from
 ### plyr package, but the grouping column is always called groups, and
@@ -750,7 +713,11 @@ edges.to.outside <- function
   closepts$vjust <- ifelse(closepts$y-centers$y>0,0,1)
   closepts$hjust <- ifelse(closepts$x-centers$x>0,0,1)
   r <- apply.method("big.boxes",closepts)
-  transform(r,x=(right-left)/2+left,y=(top-bottom)/2+bottom,hjust=0.5,vjust=0.5)
+  r$x <- (r$right-r$left)/2+r$left
+  r$y <- (r$top-r$bottom)/2+r$bottom
+  r$hjust <- 0.5
+  r$vjust <- 0.5
+  r
 }
 
 ### Calculate closest point on the alpha hull with size of the boxes,
@@ -773,31 +740,32 @@ project.onto.segments <- function
 ### m is 1 row, a center of a point cloud, we need to find the
 ### distance to the closest point on each segment of the convex
 ### hull.
- hull.segments,
+ h,
 ### Data frame describing the line segments of the convex or alpha
 ### hull.
  debug=FALSE,
  ...
 ### ignored
  ){
-  these <- within(hull.segments,{
-    s <- (y2-y1)/(x2-x1)
-    ## the closest point on the line formed by expanding this line
-    ## segment (this expression is calculated by finding the minimum
-    ## of the distance function).
-    xstar <- (m$x + m$y*s + x1*s^2 - s*y1)/(s^2+1)
-    minval <- apply(cbind(x1,x2),1,min)
-    maxval <- apply(cbind(x1,x2),1,max)
-    ## xopt is the closest point on the line segment
-    xopt <- ifelse(xstar<minval,minval,ifelse(xstar>maxval,maxval,xstar))
-    yopt <- s*(xopt-x1)+y1
-    ## distance to each point on line segment from the center
-    d <- (m$x-xopt)^2+(m$y-yopt)^2
-  })
-  i <- which.min(these$d)
-  h <- with(these[i,],data.frame(x=xopt,y=yopt))
-  if(debug)with(h,grid.segments(m$x,m$y,h$x,h$y,default.units="cm"))
-  h
+  h$s <- (h$y2-h$y1)/(h$x2-h$x1)
+  ## the closest point on the line formed by expanding this line
+  ## segment (this expression is calculated by finding the minimum
+  ## of the distance function).
+  h$xstar <- (m$x + m$y*h$s + h$x1*h$s^2 - h$s*h$y1)/(h$s^2+1)
+  h$minval <- apply(cbind(h$x1,h$x2),1,min)
+  h$maxval <- apply(cbind(h$x1,h$x2),1,max)
+  ## xopt is the closest point on the line segment
+  h$xopt <- ifelse(h$xstar<h$minval,h$minval,
+                   ifelse(h$xstar>h$maxval,h$maxval,h$xstar))
+  h$yopt <- h$s*(h$xopt-h$x1)+h$y1
+  ## distance to each point on line segment from the center
+  h$d <- (m$x-h$xopt)^2+(m$y-h$yopt)^2
+  i <- which.min(h$d)
+  result <- with(h[i,],data.frame(x=xopt,y=yopt))
+  if(debug){
+    grid.segments(m$x,m$y,result$x,result$y,default.units="cm")
+  }
+  result
 }
 
 ### Make a Positioning Function from a set of points on a vertical
@@ -850,57 +818,12 @@ ahull.points <- function(d,...,ahull=default.ahull(d)){
 ### Calculate the points on the convex hull.
 chull.points <- function(d,...){
   bpts <- d[with(d,chull(x,y)),]
-  transform(data.frame(i1=1:nrow(bpts),i2=c(2:nrow(bpts),1)),
-            x1=bpts$x[i1],
-            y1=bpts$y[i1],
-            x2=bpts$x[i2],
-            y2=bpts$y[i2])
-}
-
-follow.points <- function
-### Draws a line between each center and every point, then follows the
-### line out far enough to give a box outside the cloud. Out of all
-### the boxes constructed in this way that do not contain any points,
-### take the one which has the smallest distance to the center. 
-(d,debug=FALSE,...){
-  allm <- apply.method(list("dl.jitter","big.boxes"),d)
-  if(debug)draw.rects(allm)
-  labtab <- data.frame()
-  for(g in levels(d$groups)){
-    x <- d
-    m <- subset(allm,groups==g)
-    x$a <- x$y - m$y
-    x$b <- x$x - m$x
-    x$h <- sqrt(x$a^2+x$b^2) ## hypotenuse of triangle, not box height!
-    x$x <- x$x + m$w/2 * x$b/x$h *1.01 ## b/h = cos(theta)
-    x$y <- x$y + m$h/2 * x$a/x$h *1.01 ## a/h = sin(theta)
-    x$dist <- (x$x-m$x)^2+(x$y-m$y)^2
-    x <- transform(x,
-                   left=x-m$w/2,right=x+m$w/2,
-                   top=y+m$h/2,bottom=y-m$h/2)
-    x$points <- inside(x,d)
-    ## consider only subset of boxes that contain no points
-    x <- subset(x,points==0)
-    ## take the box with the minimal distance
-    x <- subset(x,dist==min(dist))[1,]
-    labtab <- rbind(labtab,transform(x,x=x,y=y,groups=g))
-    ## add the box's 4 points to the list of points
-    newpoints <- d[1:4,]
-    newpoints$x <- c(x$left,x$right,x$right,x$left)
-    newpoints$groups <- g
-    newpoints$y <- c(x$top,x$top,x$bottom,x$bottom)
-    d <- rbind(d,newpoints)
-  }
-  labtab
-}
-
-### Calculate a 2d density estimate then follow the gradient to a
-### point outside the convex hull.
-dens.gradient <- function(d,...){
-  require(ks)
-  est <- drvkde(with(d,cbind(x,y)),1:2,1,se=FALSE)
-  ##print(dens)
-  d
+  r <- data.frame(i1=1:nrow(bpts),i2=c(2:nrow(bpts),1))
+  r$x1 <- bpts$x[r$i1]
+  r$y1 <- bpts$y[r$i1]
+  r$x2 <- bpts$x[r$i2]
+  r$y2 <- bpts$y[r$i2]
+  r
 }
 
 check.for.columns <- function
@@ -922,17 +845,26 @@ apply.method <- function # Apply a Positioning Method
 ### Run a Positioning Method list on a given data set. This function
 ### contains all the logic for parsing a Positioning Method and
 ### sequentially applying its elements to the input data to obtain the
-### label positions. This is useful since it is often much less
-### verbose to define Positioning Methods in list form instead of
-### function form, ex lasso.labels.
+### label positions.
 (method,
 ### Direct labeling Positioning Method, which is a list comprised of
 ### any of the following: (1) a Positioning Function, (2) a character
-### string which is the name of an object that could be used, (3)
-### named values, or (4) a Positioning Method list. Starting from the
-### data frame of points to plot for the panel, the elements of the
-### list are applied in sequence, and each row of the resulting data
-### frame is used to draw a direct label.
+### string, (3) named values, or (4) a Positioning Method
+### list. Starting from the data frame of points to plot for the
+### panel, the elements of the Positioning Method list are applied in
+### sequence, and then each row of the resulting data frame is used to
+### draw a direct label. The interpretation of Positioning Method list
+### is described below. (1) a Positioning Function is any
+### function(d,...) which takes a data.frame d with columns x,y,groups
+### and returns another data.frame representing the positions of the
+### desired direct labels. (2) a un-named list item which is a
+### character string is treated as the name of an R object, so
+### specifying "last.points" means to look up the variable called
+### last.points and use that. (3) Named values are used to add data
+### columns, e.g. cex=1.5 means set the cex column of the direct label
+### data.frame to 1.5. (4) the element of a Positioning Method list
+### can be another Positioning Method list, in which case the elements
+### of the inner list are applied.
  d,
 ### Data frame to which we apply the Positioning Method.
  columns.to.check=c("x","y","groups"),
@@ -1022,14 +954,14 @@ static.labels <- function(x,y,groups,...){
   }
 }
 
-### Return the positions of the plot vertical limits in inches, for
-### use as the limit argument to qp.labels.
+### Return the positions of the plot vertical limits in cm, for use as
+### the limit argument to qp.labels.
 ylimits <- function(...){
   convertY(unit(c(0,1),"npc"),"cm",valueOnly=TRUE)
 }
 
-### Return the positions of the plot horizontal limits in inches, for
-### use as the limit argument to qp.labels.
+### Return the positions of the plot horizontal limits in cm, for use
+### as the limit argument to qp.labels.
 xlimits <- function(...){
   convertX(unit(c(0,1),"npc"),"cm",valueOnly=TRUE)
 }
@@ -1082,7 +1014,7 @@ empty.grid <- function
   label.targets <-
     label.targets[order(nchar(as.character(label.targets$groups))),]
   for(v in label.targets$groups){
-    r <- subset(label.targets,groups==v)
+    r <- label.targets[label.targets$groups==v,]
     no.points <- data.frame()
     expand <- 0
     while(nrow(no.points)==0){
@@ -1108,12 +1040,12 @@ empty.grid <- function
       no.points[i,"nearest"] <- as.character(orig$groups[which.min(d.orig)])
     }
     ## Only consider boxes that are closest to this class.
-    closest <- subset(no.points,nearest == rownames(r))
+    closest <- no.points[no.points$nearest == rownames(r),]
     if(nrow(closest) == 0){
       closest <- no.points
     }
     closest$len <- with(closest,(r$x-x)^2+(r$y-y)^2)
-    best <- subset(closest, len == min(len))[1, ]
+    best <- closest[closest$len == min(closest$len), ][1, ]
 
     res <- rbind(res,transform(r,x=best$x,y=best$y))
     ## add points to cloud

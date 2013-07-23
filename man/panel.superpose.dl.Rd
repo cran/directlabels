@@ -49,7 +49,7 @@ print(densityplot(~ppp,loci,groups=type,n=500,
 
 ## Exploring custom panel and panel.groups functions
 library(ggplot2)
-data(BodyWeight,package="nlme")
+library(nlme)
 ## Say we want to use a simple linear model to explain rat body weight:
 fit <- lm(weight~Time+Diet+Rat,BodyWeight)
 bw <- fortify(fit,BodyWeight)

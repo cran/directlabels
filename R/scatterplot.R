@@ -8,10 +8,6 @@ ahull.grid <- list("outside.ahull","empty.grid")
 ### each point cloud.
 smart.grid <- list("big.boxes","empty.grid")
 
-### Draw a regression line through the data, then draw perpendicular
-### lines to the extreme points of each point cloud.
-perpendicular.grid <- list("perpendicular.lines","big.boxes","empty.grid")
-
 ### Label each point cloud near the extremities of the plot region.
 extreme.grid <- list("extreme.points","big.boxes","empty.grid")
 

@@ -40,7 +40,9 @@ maxvar.points <- function(d,...){
     if(is.factor(x))levels(x)[c(1,nlevels(x))]
     else range(x,na.rm=TRUE)
   }
-  vars <- sapply(myrange(d$x),function(v)var(subset(d,x==v)$y,na.rm=TRUE))
+  vars <- sapply(myrange(d$x),function(v){
+    var(d[d$x==v,"y"],na.rm=TRUE)
+  })
   FUN <- if(is.na(vars[1]))"last.points"
   else if(is.na(vars[2]))"first.points"
   else if(diff(vars)<0)"first.points" else "last.points"
@@ -87,8 +89,9 @@ lines2 <- function
     bigger.on.average <- D$y==max(y$y)
     f <- if(bigger.on.average)max else min
     compare <- get(if(bigger.on.average)">" else "<")
-    ld    <- subset(d,groups==D$groups)
-    other <- subset(d,groups!=D$groups)
+    is.group <- d$groups==D$groups
+    ld    <- d[is.group,]
+    other <- d[!is.group,]
     find.closest.y <- function(x){
       closest.x.on.other.line <- which.min(abs(other$x-x))
       other[closest.x.on.other.line,"y"]
