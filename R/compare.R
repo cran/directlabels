@@ -1,8 +1,7 @@
 dlcompare <- structure(function # Direct label comparison plot
 ### Compare several plots and/or label placement methods. This creates
 ### a custom grid graphics display based on lattice and/or ggplot2
-### output. This is possible because the direct.label function is
-### generic. Plots will be on the columns and positioning methods will
+### output. Plots will be on the columns and positioning methods will
 ### be on the rows.
 (plots,
 ### List of ggplot2 or lattice plots. List names will be used to
@@ -97,7 +96,7 @@ dlcompare <- structure(function # Direct label comparison plot
   }
 
   ## Compare a legend with direct labels on the same plot.
-  data(BodyWeight,package="nlme")
+  library(nlme)
   ggrat <- qplot(Time,weight,data=BodyWeight,
                  colour=Rat,geom="line",facets=.~Diet)
   pfuns <- list("legend","direct labels"="last.qp")

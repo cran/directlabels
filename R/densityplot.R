@@ -11,7 +11,8 @@ top.bumptwice <- function(d,debug=FALSE,...){
   labtab <- apply.method("top.bumpup",d)
   if(debug)draw.rects(labtab)
   gapply(labtab,function(l,...){
-    x <- sort(c(range(d$x),subset(d,y>l$bottom&y<l$top)$x))
+    between <- d[d$y>l$bottom & d$y<l$top,]
+    x <- sort(c(range(d$x),between$x))
     if(length(x)==2)return(l)
     dif <- diff(x)
     ok <- dif>with(l,right-left)

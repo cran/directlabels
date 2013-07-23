@@ -14,9 +14,9 @@ different error measures were used to quantify the model fit.
   \describe{
     \item{\code{bases.per.probe}}{a factor with levels \code{374}
       \code{7}: the sampling density of the signal.}
-    \item{\code{segments}}{a numeric vector: the model complexity
+    \item{\code{segments}}{numeric: the model complexity
       measured using number of segments.}
-    \item{\code{cost}}{a numeric vector: the cost value.}
+    \item{\code{cost}}{numeric: the cost value.}
     \item{\code{type}}{a factor with levels \code{Signal}
       \code{Breakpoint} \code{Complete} \code{Incomplete}
       \code{Positive}: how to judge model fit? Signal: log mean squared

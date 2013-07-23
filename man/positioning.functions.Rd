@@ -231,7 +231,6 @@ p <- ggplot(normal.l2.cluster$path,aes(x,y))+
   print(direct.label(p,"ahull.grid"))
   print(direct.label(p,"chull.grid"))
   print(direct.label(p,"extreme.grid"))
-  print(direct.label(p,"perpendicular.grid"))
   print(direct.label(p,"smart.grid"))
 }
 

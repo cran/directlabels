@@ -17,7 +17,7 @@ applying each specified Positioning Method.}
 
 \examples{
 ## Simple example: label the start and endpoints
-data(BodyWeight,package="nlme")
+library(nlme)
 library(lattice)
 ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
 ##ratplot <- qplot(Time,weight,data=BodyWeight,group=Rat,colour=Rat,geom="line",facets=.~Diet)
@@ -112,7 +112,6 @@ mylars <- function
 ## Calculate lasso path, plot and label
 mylasso <- dl.combine(lasso.labels,last.qp)
 if(require(ElemStatLearn)){
-  data(prostate)
   pros <- subset(prostate,select=-train,train==TRUE)
   ycol <- which(names(pros)=="lpsa")
   x <- as.matrix(pros[-ycol])
@@ -126,7 +125,7 @@ if(require(ElemStatLearn)){
 }
 
 if(require(lars)){
-  data(diabetes)
+  data(diabetes,envir=environment())
   dres <- with(diabetes,mylars(x,y))
   P <- xyplot(coef~arclength,dres,groups=variable,type="l")
   plot(direct.label(P,"mylasso"))

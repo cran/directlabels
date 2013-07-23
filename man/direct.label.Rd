@@ -1,6 +1,5 @@
 \name{direct.label}
 \alias{direct.label}
-\alias{directlabels}
 \title{Direct labels for color decoding}
 \description{Add direct labels to a plot, and hide the color legend. Modern
 plotting packages like lattice and ggplot2 show automatic legends
@@ -37,7 +36,7 @@ print(direct.label(scatter))
 
 ## direct labels for lineplots that do not overlap and do not go off
 ## the plot.
-data(BodyWeight,package="nlme")
+library(nlme)
 library(lattice)
 oldopt <- lattice.options(panel.error=NULL)
 ratplot <-

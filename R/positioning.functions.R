@@ -4,10 +4,10 @@
 drawDetails.dlgrob <- function(x,recording){
   ## calculate x and y position in cm --- by this time we should have
   ## done any preprocessing necessary to convert 1d data to 2d data!
-  cm.data <- transform(x$data,
-                       x=convertX(unit(x,"native"),"cm",valueOnly=TRUE),
-                       y=convertY(unit(y,"native"),"cm",valueOnly=TRUE),
-                       groups=factor(groups))
+  cm.data <- x$data
+  cm.data$x <- convertX(unit(cm.data$x,"native"),"cm",valueOnly=TRUE)
+  cm.data$y <- convertY(unit(cm.data$y,"native"),"cm",valueOnly=TRUE)
+  cm.data$groups <- factor(cm.data$groups)
   ## save original levels for later in case Positioning Methods mess
   ## them up.
   levs <- unique(cm.data[,c("groups","colour")])
@@ -77,7 +77,7 @@ direct.label <- structure(function # Direct labels for color decoding
  debug=FALSE
 ### Show debug output?
  ){
-  ##alias<< directlabels
+  ##alias < < directlabels #disabled
   if(is.character(method)&&method[1]=="legend")
     UseMethod("uselegend")
   else
@@ -94,7 +94,7 @@ direct.label <- structure(function # Direct labels for color decoding
 
   ## direct labels for lineplots that do not overlap and do not go off
   ## the plot.
-  data(BodyWeight,package="nlme")
+  library(nlme)
   library(lattice)
   oldopt <- lattice.options(panel.error=NULL)
   ratplot <-

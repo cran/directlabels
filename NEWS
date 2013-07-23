@@ -9,7 +9,7 @@ Get rid of dl.summarize and gapply.fun for simplicity?
 
 method for .zoo plots?
 
-handling custom # of bins/custom densityplot params?
+handling custom densityplot params in lattice?
 
 problems with plotting color labels in lattice when col= is specified,
 see etc/individual.R, and gabor.R
@@ -20,13 +20,39 @@ objects.
 contourplot labels as in lattice::panel.contourplot or C source code
 in r-source/src/main/plot3d.c
 
-From Doug Peterson: Side point: Something else I noticed when playing
-with this - if any kind of bin adjustment is used within the
-stat_contour (e.g., stat_contour(aes(colour=..level..), binwidth=50)
-directlabels ignores the binned contour lines and labels everything
-(=whatever default contour lines are produced, even if not plotted!).
+other contourplots, see etc/contour.R
 
 See etc/area.R for an example of using fill in area plots.
+
+2013.6.15
+
+Documentation updates.
+
+2013.6.14
+
+Depend on quadprog.
+
+Bugfix for reduce.cex.lr: decrease the text size based on previous
+cex, rather than assuming the previous cex is 1.
+
+Remove follow.points, perpendicular.(lines|grid).
+
+Change with/within/transform/subset to alternatives that do not
+generate NOTEs during package check.
+
+2.10
+
+Fixed: stat_contour(breaks=custom_breaks): From Doug Peterson: Side
+point: Something else I noticed when playing with this - if any kind
+of bin adjustment is used within the stat_contour (e.g.,
+stat_contour(aes(colour=..level..), binwidth=50) directlabels ignores
+the binned contour lines and labels everything (=whatever default
+contour lines are produced, even if not plotted!). This should also
+work for specifying custom # of bins in geom_bar.
+
+data("quoted") for R-3.0 package checks.
+
+4 Nov 2012 fix some doc typos.
 
 2.9 --- 25 Sep 2012
 

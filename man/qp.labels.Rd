@@ -11,7 +11,8 @@ line, subject to the constraint that they should not overlap.}
   \item{upper.var}{Variable name of the upper limit of each label bounding box.}
   \item{order.labels}{Function that takes the data.frame of labels and returns an
 ordering, like from the order function. That ordering will be used
-to reorder the rows.}
+to reorder the rows. This is useful to e.g. break ties when two
+groups have exactly the same value at the endpoint near the label.}
   \item{limits}{Function that takes the data.frame of labels an returns a numeric
 vector of length 2. If finite, these values will be used to add
 constraints to the QP: limits[1] is the lower limit for the first
@@ -29,7 +30,6 @@ lower.var.}
 
 
 \examples{
-  data(SegCost,package="directlabels")
   SegCost$error <- factor(SegCost$error,c("FP","FN","E","I"))
   library(ggplot2)
   fp.fn.colors <- c(FP="skyblue",FN="#E41A1C",I="black",E="black")
