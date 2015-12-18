@@ -5,7 +5,8 @@
 \usage{\method{direct.label}{ggplot}(p, method = NULL, debug = FALSE)}
 \arguments{
   \item{p}{The ggplot object.}
-  \item{method}{Method for direct labeling as described in ?label.positions.}
+  \item{method}{Method for direct labeling as described in
+\code{\link{apply.method}}.}
   \item{debug}{Show debug output?}
 }
 

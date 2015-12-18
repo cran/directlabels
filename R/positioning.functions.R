@@ -1,7 +1,28 @@
 ### Process data points using the Positioning Method and draw the
 ### resulting direct labels. This is called for every panel with
 ### direct labels, every time the plot window is resized.
-drawDetails.dlgrob <- function(x,recording){
+drawDetails.dlgrob <- function
+(x,
+### The dlgrob list object. x$method should be a Positioning Method
+### list and x$data should be a data.frame with the following
+### variables: \describe{
+### \item{x,y}{numeric horizontal and vertical positions of direct
+### labels, in native units. These are converted to cm units before
+### applying the Positioning Method.}
+### \item{groups}{factor that indices the different groups, and
+### colour indicates the corresponding group colour.}
+### \item{hjust and vjust}{(optional) numeric values usually in
+### [0,1] that control the justification of the text label relative to
+### the x,y position.}
+### \item{rot}{(optional) numeric value in [0,360] that specifies
+### the degrees which the text should be rotated.}
+### \item{cex, alpha, fontface, fontfamily}{(optional) passed to
+### gpar.}
+### } Additionally, x$debug should be set to TRUE or
+### FALSE, and x$axestonative should be a function that converts units
+### shown on the axes to native units of x$data[,c("x","y")].
+ recording
+ ){
   ## calculate x and y position in cm --- by this time we should have
   ## done any preprocessing necessary to convert 1d data to 2d data!
   cm.data <- x$data
@@ -11,16 +32,20 @@ drawDetails.dlgrob <- function(x,recording){
   ## save original levels for later in case Positioning Methods mess
   ## them up.
   levs <- unique(cm.data[,c("groups","colour")])
-  code <- as.character(cm.data$colour)
-  names(code) <- as.character(cm.data$groups)
+  code <- as.character(levs$colour)
+  names(code) <- as.character(levs$groups)
   ## apply ignore.na function -- these points are not plotted
   cm.data <- ignore.na(cm.data)
   cm.data <- apply.method(x$method,cm.data,
                           debug=x$debug,axes2native=x$axes2native)
   if(nrow(cm.data)==0)return()## empty data frames can cause many bugs
-  ## rearrange factors in case Positioning Methods messed up the
-  ## order:
-  cm.data$col <- code[as.character(cm.data$groups)]
+  ## Take col from colour or groups.
+  colour <- cm.data[["colour"]]
+  cm.data$col <- if(is.null(colour)){
+    code[as.character(cm.data$groups)]
+  } else {
+    colour
+  }
   ## defaults for grid parameter values:
   defaults <- list(hjust=0.5,vjust=0.5,rot=0)
   for(p in names(defaults)){
@@ -72,8 +97,9 @@ direct.label <- structure(function # Direct labels for color decoding
  method=NULL,
 ### Positioning Method, which determines the positions of the direct
 ### labels as a function of the plotted data. If NULL, we examine the
-### plot p and try to choose an appropriate default. See ?apply.method
-### for more information about Positioning Methods.
+### plot p and try to choose an appropriate default. See
+### \code{\link{apply.method}} for more information about Positioning
+### Methods.
  debug=FALSE
 ### Show debug output?
  ){
@@ -84,13 +110,14 @@ direct.label <- structure(function # Direct labels for color decoding
     UseMethod("direct.label")
 ### A plot with direct labels and no color legend.
 },ex=function(){
-  ## Add direct labels to a ggplot2 scatterplot, making sure that each
-  ## label is close to its point cloud, and doesn't overlap points or
-  ## other labels.
-  library(ggplot2)
-  scatter <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
-                   main="Fuel efficiency depends on car size")
-  print(direct.label(scatter))
+  if(require(ggplot2)){
+    ## Add direct labels to a ggplot2 scatterplot, making sure that each
+    ## label is close to its point cloud, and doesn't overlap points or
+    ## other labels.
+    scatter <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
+                     main="Fuel efficiency depends on car size")
+    print(direct.label(scatter))
+  }
 
   ## direct labels for lineplots that do not overlap and do not go off
   ## the plot.

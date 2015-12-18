@@ -13,8 +13,9 @@ plots.}
 colors.}
   \item{method}{Positioning Method, which determines the positions of the direct
 labels as a function of the plotted data. If NULL, we examine the
-plot p and try to choose an appropriate default. See ?apply.method
-for more information about Positioning Methods.}
+plot p and try to choose an appropriate default. See
+\code{\link{apply.method}} for more information about Positioning
+Methods.}
   \item{debug}{Show debug output?}
 }
 
@@ -26,13 +27,14 @@ for more information about Positioning Methods.}
 
 
 \examples{
-## Add direct labels to a ggplot2 scatterplot, making sure that each
-## label is close to its point cloud, and doesn't overlap points or
-## other labels.
-library(ggplot2)
-scatter <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
-                 main="Fuel efficiency depends on car size")
-print(direct.label(scatter))
+if(require(ggplot2)){
+  ## Add direct labels to a ggplot2 scatterplot, making sure that each
+  ## label is close to its point cloud, and doesn't overlap points or
+  ## other labels.
+  scatter <- qplot(jitter(hwy),jitter(cty),data=mpg,colour=class,
+                   main="Fuel efficiency depends on car size")
+  print(direct.label(scatter))
+}
 
 ## direct labels for lineplots that do not overlap and do not go off
 ## the plot.

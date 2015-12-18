@@ -131,6 +131,16 @@ p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
   xlim(0,20)
 },
 {
+data(projectionSeconds, package="directlabels")
+p <- ggplot(projectionSeconds, aes(vector.length/1e6))+
+  geom_ribbon(aes(ymin=min, ymax=max,
+                  fill=method, group=method), alpha=1/2)+
+  geom_line(aes(y=mean, group=method, colour=method))+
+  ggtitle("Projection Time against Vector Length (Sparsity = 10%)")+
+  guides(fill="none")+
+  ylab("Runtime (s)")
+},
+{
 ## complicated ridge regression lineplot ex. fig 3.8 from Elements of
 ## Statistical Learning, Hastie et al.
 myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
@@ -173,12 +183,15 @@ uk.lung <- rbind(data.frame(Time,sex="male",deaths=as.integer(mdeaths)),
 p <- qplot(Time,deaths,data=uk.lung,colour=sex,geom="line")+
   xlim(ISOdate(1973,9,1),ISOdate(1980,4,1))
 })){
+  print(direct.label(p,"angled.boxes"))
   print(direct.label(p,"first.bumpup"))
   print(direct.label(p,"first.points"))
+  print(direct.label(p,"first.polygons"))
   print(direct.label(p,"first.qp"))
   print(direct.label(p,"lasso.labels"))
   print(direct.label(p,"last.bumpup"))
   print(direct.label(p,"last.points"))
+  print(direct.label(p,"last.polygons"))
   print(direct.label(p,"last.qp"))
   print(direct.label(p,"lines2"))
   print(direct.label(p,"maxvar.points"))

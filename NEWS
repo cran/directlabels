@@ -1,5 +1,10 @@
 TODO
 
+Implement a solver for vertical.qp, to avoid depending on the compiled
+code in quadprog which I guess is not always available.
+
+Define makeContent.dlgrob instead of drawDetails.dlgrob in R-3.0?
+
 image labels: draw a grob on screen instead of assuming it is
 text. Have a toggle for drawing images and/or text. Handle both in a
 uniform way in Positioning Methods by just asking for the grob size
@@ -22,7 +27,72 @@ in r-source/src/main/plot3d.c
 
 other contourplots, see etc/contour.R
 
-See etc/area.R for an example of using fill in area plots.
+2015.12.16
+
+importFrom non-base packages.
+
+2015.12.15
+
+ggplot2 does not need to be installed for package checks to pass.
+
+2015.12.14
+
+suggest ggplot2 >= 2.0.
+
+2015.11.28
+
+Works with new ggplot2 >= 1.0.1.9003 internals. (and no longer works
+with older ggplot2 internals!)
+
+2015.6.17
+
+Namespaces fixes to ensure that R CMD check runs cleanly, 
+and that you can use `geom_dl()` 
+without attaching directlabels to the search path.
+
+2014.6.13
+
+geom_dl(show_guide=FALSE) is default.
+
+2014.5.12
+
+custom colors for dotplots in lattice, see etc/lattice-custom-colors.R
+
+2014.4.25
+
+BUGFIX: bumpup works when there is only 1 group.
+
+2014.1.31
+
+use fill if no colour in ggplots.
+
+guides(others_with_colour="none")
+
+2014.1.27
+
+polygon.methods for lineplots.
+
+2013.11.21
+
+projectionSeconds data set and angled.boxes Positioning Method,
+inspired by Mark Schmidt's prettyPlot.
+http://www.di.ens.fr/~mschmidt/Software/prettyPlot.html
+
+draw.rects draws a rotated box when rot is specified.
+
+2013.9.17
+
+label.endpoints can handle the case (common for scatterplots) where
+there are several endpoints with the same x value.
+
+2013.8.2
+
+geom_dl aes inherits from the colored geom aes.
+
+2013.7.24
+
+Doc updates: drawDetails.dlgrob documents interpretation of columns,
+apply.method uses itemize list, \code{\link{fun}} hyperlinks.
 
 2013.6.15
 

@@ -9,7 +9,8 @@ labels using the specified method.}
 \arguments{
   \item{p}{The lattice plot (result of a call to a high-level lattice
 function).}
-  \item{method}{Method for direct labeling as described in ?label.positions.}
+  \item{method}{Method for direct labeling as described in
+\code{\link{apply.method}}.}
   \item{debug}{Show debug output?}
 }
 

@@ -4,9 +4,9 @@
 \description{Call panel.superpose for the data points and then for the direct
 labels. This is a proper lattice panel function that behaves much
 like panel.superpose.}
-\usage{panel.superpose.dl(x, y = NULL, subscripts, groups, panel.groups, 
-    method = NULL, .panel.superpose = panel.superpose, type = "p", 
-    debug = FALSE, ...)}
+\usage{panel.superpose.dl(x, y = NULL, subscripts, groups, 
+    panel.groups, method = NULL, .panel.superpose = lattice::panel.superpose, 
+    type = "p", debug = FALSE, ...)}
 \arguments{
   \item{x}{Vector of x values.}
   \item{y}{Vector of y values.}
@@ -39,7 +39,7 @@ print(direct.label( ## most user-friendly
                    ))
 print(direct.label( ## exactly the same as above but with specific panel fns
                    densityplot(~ppp,loci,groups=type,n=500,
-                               panel=panel.superpose,
+                               panel=lattice::panel.superpose,
                                panel.groups="panel.densityplot")
                    ))
 ## using panel.superpose.dl as the panel function automatically adds
@@ -48,11 +48,11 @@ print(densityplot(~ppp,loci,groups=type,n=500,
                   panel=panel.superpose.dl,panel.groups="panel.densityplot"))
 
 ## Exploring custom panel and panel.groups functions
-library(ggplot2)
 library(nlme)
 ## Say we want to use a simple linear model to explain rat body weight:
 fit <- lm(weight~Time+Diet+Rat,BodyWeight)
-bw <- fortify(fit,BodyWeight)
+bw <- BodyWeight
+bw$.fitted <- predict(fit,BodyWeight)
 ## lots of examples to come, all with these arguments:
 ratxy <- function(...){
   xyplot(weight~Time|Diet,bw,groups=Rat,type="l",layout=c(3,1),...)
@@ -83,7 +83,7 @@ panel.model <- function(x,subscripts,col.line,...){
   panel.xyplot(x=x,subscripts=subscripts,col.line=col.line,...)
   llines(x,bw[subscripts,".fitted"],col=col.line,lty=2)
 }
-pg <- ratxy(panel=panel.superpose,panel.groups=panel.model)
+pg <- ratxy(panel=lattice::panel.superpose,panel.groups=panel.model)
 print(pg)
 ## If you use panel.superpose.dl with a custom panel.groups function,
 ## you need to manually specify the Positioning Method, since the
@@ -93,7 +93,7 @@ print(ratxy(panel=panel.superpose.dl,panel.groups="panel.model",
             method="first.qp"))
 
 ## Custom panel function that draws a box around values:
-panel.line1 <- function(ps=panel.superpose){
+panel.line1 <- function(ps=lattice::panel.superpose){
   function(y,...){
     panel.abline(h=range(y))
     ps(y=y,...)

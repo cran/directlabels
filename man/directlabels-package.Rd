@@ -14,7 +14,7 @@ and inferring an appropriate Positioning Method.}
 \tabular{ll}{Package: \tab directlabels\cr
 Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr
 Author: \tab Toby Dylan Hocking\cr
-Version: \tab 2013.6.15\cr
+Version: \tab 2014.6.13\cr
 License: \tab GPL-3\cr
 Title: \tab Direct labels for multicolor plots in lattice or ggplot2\cr
 URL: \tab http://directlabels.r-forge.r-project.org/\cr

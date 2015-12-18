@@ -48,7 +48,7 @@ dldoc <- function # Make directlabels documentation
   (L
    ## List of posfuns and plots to match up
    ){
-    
+
     plotcodes <-
       paste("{\n",sapply(L$plots,"[[","code"),"\n}",sep="",collapse=",\n")
     forloop <- paste("\nfor(p in list(",plotcodes,"))",sep="")
@@ -70,7 +70,7 @@ dldoc <- function # Make directlabels documentation
   for(i in 1:nrow(m))if(length(m[i,]$plots))for(j in seq_along(m[i,]$plots)){
     m[i,]$plots[[j]]$code <- rhtmlescape(m[i,]$plots[[j]]$code)
   }
-  theme_set(theme_grey())
+  ggplot2::theme_set(ggplot2::theme_grey())
 
   version <- read.dcf("DESCRIPTION")[,"Version"]
   info.lines <- system("svn info -R",intern=TRUE)
@@ -102,7 +102,7 @@ dldoc <- function # Make directlabels documentation
         pngurls[f$name,p$name] <- pngfile
         if(!file.exists(pngfile)){
           cat(" ",f$name,sep="")
-          png(pngfile)
+          png(pngfile, type="cairo")
           set.seed(1)
           tryCatch({
             print(direct.label(p$plot,f$fun))
@@ -188,9 +188,7 @@ extract.posfun <- function # Extract Positioning Method for documentation
 ### can be used with examples defined in the doc/ subdirectory with
 ### the same name.
  ){
-  require(inlinedocs)
-  require(directlabels)
-  L <- extract.docs.file(f)
+  L <- inlinedocs::extract.docs.file(f)
   e <- new.env()
   sys.source(f,e)
   for(N in names(L)){
