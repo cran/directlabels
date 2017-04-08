@@ -13,7 +13,7 @@ far.from.others.borders <- function(all.groups,...,debug=FALSE){
     }
     group.list[[groups]] <- data.frame(approx.list, groups)
   }
-  output <- data.frame()
+  output.list <- list()
   for(group.i in seq_along(group.list)){
     one.group <- group.list[[group.i]]
     ## From Mark Schmidt: "For the location of the boxes, I found the
@@ -49,8 +49,10 @@ far.from.others.borders <- function(all.groups,...,debug=FALSE){
     neighbors <- approx(one.group$x, one.group$y, c(left, right))
     slope <- with(neighbors, (y[2]-y[1])/(x[2]-x[1]))
     picked$rot <- 180*atan(slope)/pi
-    output <- rbind(output, picked)
+    output.list[[group.i]] <- picked
   }
+  output <- do.call(rbind, output.list)
+  ##browser()
   output
 }
 
@@ -335,11 +337,11 @@ calc.boxes <- function
   convert <- function(worh){
     conv <- get(paste("convert",worh,sep=""))
     stri <- get(paste("string",worh,sep=""))
-    with(d,sapply(seq_along(groups),function(i){
-      if("cex"%in%names(d))vp$gp <- gpar(cex=cex[i])
+    as.numeric(sapply(seq_along(d$groups),function(i){
+      if("cex"%in%names(d))vp$gp <- gpar(cex=d$cex[i])
       pushViewport(vp)
       if(debug)grid.rect() ##highlight current viewport
-      w <- conv(stri(as.character(groups[i])),"cm")
+      w <- conv(stri(as.character(d$groups[i])),"cm")
       popViewport()
       w
     }))
@@ -584,6 +586,8 @@ qp.labels <- structure(function# Make a Positioning Method for non-overlapping l
     ## do, so just return it.
     if(nrow(d)==1)return(d)
 
+    ##browser()
+
     ## Reality checks.
     for(v in essential){
       if(! v %in% names(d)){
@@ -800,7 +804,9 @@ gapply <- function
   dfs <- split(d,as.character(d[[groups]]))
   f <- function(d,...){
     res <- apply.method(method,d,columns.to.check=c("x","y"),...)
-    res[[groups]] <- d[[groups]][1]
+    if(nrow(res)){
+      res[[groups]] <- d[[groups]][1]
+    }
     res
   }
   results <- lapply(dfs,f,...)
@@ -1040,13 +1046,22 @@ apply.method <- function # Apply a Positioning Method
       group.specific <- lapply(group.dfs,only.unique.vals)
       to.restore <- Reduce(intersect,lapply(group.specific,names))
       d <- method[[1]](d,debug=debug,...)
-      check.for.columns(d,columns.to.check)
-      ## do not restore if they are present in the returned list!
-      to.restore <- to.restore[!to.restore %in% names(d)]
-      for(N in to.restore){
-        d[[N]] <- NA
-        for(g in unique(d$groups)){
-          d[d$groups==g,N] <- group.specific[[g]][,N]
+      if(length(d)==0){#NULL or list()
+        return(data.frame())
+      }else{
+        check.for.columns(d,columns.to.check)
+        if("groups" %in% names(d)){
+          ## do not restore if they are present in the returned list!
+          to.restore <- to.restore[!to.restore %in% names(d)]
+          for(N in to.restore){
+            d[[N]] <- NA
+            group.vec <- paste(unique(d$groups))
+            for(g in group.vec){
+              old.val <- group.specific[[g]][,N]
+              if(is.factor(old.val))old.val <- paste(old.val)
+              d[d$groups==g,N] <- old.val
+            }
+          }
         }
       }
       attr(d,"orig.data") <-
