@@ -1,5 +1,0 @@
-data(mpg,package="ggplot2")
-m <- lm(cty~displ,data=mpg)
-mpgf <- fortify(m,mpg)
-library(lattice)
-xyplot(jitter(.resid)~jitter(.fitted),mpgf,groups=factor(cyl))
