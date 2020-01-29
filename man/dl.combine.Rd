@@ -108,7 +108,6 @@ mylars <- function
 ## Calculate lasso path, plot and label
 mylasso <- dl.combine(lasso.labels, last.qp)
 
-if(require(ElemStatLearn)){
   pros <- subset(prostate,select=-train,train==TRUE)
   ycol <- which(names(pros)=="lpsa")
   x <- as.matrix(pros[-ycol])
@@ -121,7 +120,6 @@ if(require(ElemStatLearn)){
       geom_line(aes(group=variable))
     direct.label(p,"mylasso")
   }
-}
 
 if(require(lars)){
   data(diabetes,envir=environment())

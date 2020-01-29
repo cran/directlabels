@@ -112,7 +112,7 @@ p <- qqmath(~gcsescore,Chem97,groups=gender,
        type=c("l","g"),f.value=ppoints(100))
 },
 {
-data(prostate,package="ElemStatLearn")
+data(prostate)
 pros <- subset(prostate,select=-train,train==TRUE)
 ycol <- which(names(pros)=="lpsa")
 x <- as.matrix(pros[-ycol])
@@ -158,7 +158,7 @@ myridge <- function(f,data,lambda=c(exp(-seq(-15,15,l=200)),0)){
   limpts <- transform(subset(molt,lambda==0),lambda=Inf,df=0,value=0)
   rbind(limpts,molt)
 }
-data(prostate,package="ElemStatLearn")
+data(prostate)
 pros <- subset(prostate,train==TRUE,select=-train)
 m <- myridge(lpsa~.,pros)
 library(lattice)

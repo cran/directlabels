@@ -20,7 +20,7 @@ inside, so you should set cex before using this.}
 
 
 \examples{
-if(require(ElemStatLearn) && require(lars) && require(ggplot2)){
+if(require(lars) && require(ggplot2)){
   pros <- subset(prostate,select=-train,train==TRUE)
   ycol <- which(names(pros)=="lpsa")
   x <- as.matrix(pros[-ycol])
