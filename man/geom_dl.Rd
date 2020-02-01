@@ -2,17 +2,21 @@
 \alias{geom_dl}
 \title{geom dl}
 \description{Geom that will plot direct labels.}
-\usage{geom_dl(mapping = NULL, data = NULL, ..., method = stop("must specify method= argument"), 
-    debug = FALSE, na.rm = TRUE, parse = FALSE, stat = "identity", 
-    position = "identity", inherit.aes = TRUE)}
+\usage{geom_dl(mapping = NULL, 
+    data = NULL, ..., 
+    method = stop("must specify method= argument"), 
+    debug = FALSE, na.rm = TRUE, 
+    parse = FALSE, stat = "identity", 
+    position = "identity", 
+    inherit.aes = TRUE)}
 \arguments{
   \item{mapping}{aes(label=variable_that_will_be_used_as_groups_in_Positioning_Methods).}
   \item{data}{data.frame to start with for direct label computation.}
   \item{\dots}{passed to params.}
-  \item{method}{Positioning Method for direct label placement, passed to apply.method.}
+  \item{method}{Positioning Method for direct label placement, passed to \code{\link{apply.method}}.}
   \item{debug}{Show directlabels debugging output?}
   \item{na.rm}{passed to params.}
-  \item{parse}{parse text labels as plotmath expressions? not yet supported, but
+  \item{parse}{\code{parse} text labels as plotmath expressions? not yet supported, but
 I would be open to accepting a PR if somebody wants to implement
 that.}
   \item{stat}{passed to layer.}

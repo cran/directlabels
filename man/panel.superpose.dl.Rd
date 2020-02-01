@@ -4,21 +4,24 @@
 \description{Call panel.superpose for the data points and then for the direct
 labels. This is a proper lattice panel function that behaves much
 like panel.superpose.}
-\usage{panel.superpose.dl(x, y = NULL, subscripts, groups, 
-    panel.groups, method = NULL, .panel.superpose = lattice::panel.superpose, 
-    type = "p", debug = FALSE, ...)}
+\usage{panel.superpose.dl(x, 
+    y = NULL, subscripts, 
+    groups, panel.groups, 
+    method = NULL, .panel.superpose = lattice::panel.superpose, 
+    type = "p", debug = FALSE, 
+    ...)}
 \arguments{
-  \item{x}{Vector of x values.}
-  \item{y}{Vector of y values.}
+  \item{x}{Vector of \code{x} values.}
+  \item{y}{Vector of \code{y} values.}
   \item{subscripts}{Subscripts of x,y,groups.}
   \item{groups}{Vector of group ids.}
-  \item{panel.groups}{To be parsed for default labeling method, and passed to
+  \item{panel.groups}{To be parsed for default labeling \code{method}, and passed to
 panel.superpose.}
   \item{method}{Positioning Method for direct labeling. NULL indicates to choose a
-Positioning Method based on the panel.groups function.}
+Positioning Method based on the \code{panel.groups} function.}
   \item{.panel.superpose}{The panel function to use for drawing data points.}
-  \item{type}{Plot type, used for default method dispatch.}
-  \item{debug}{passed to dlgrob.}
+  \item{type}{Plot \code{type}, used for default \code{method} dispatch.}
+  \item{debug}{passed to \code{\link{dlgrob}}.}
   \item{\dots}{passed to real panel function, and to translator.}
 }
 

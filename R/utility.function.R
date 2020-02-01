@@ -113,30 +113,31 @@ dl.combine <- structure(function # Combine output of several methods
 ### A Positioning Method that returns the combined data frame after
 ### applying each specified Positioning Method.
 },ex=function(){
+
   ## Simple example: label the start and endpoints
   library(nlme)
   library(lattice)
-  ratplot <- xyplot(weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
-  ##ratplot <- qplot(Time,weight,data=BodyWeight,group=Rat,colour=Rat,geom="line",facets=.~Diet)
+  ratplot <- xyplot(
+    weight~Time|Diet,BodyWeight,groups=Rat,type='l',layout=c(3,1))
   both <- dl.combine("first.points","last.points")
   rat.both <- direct.label(ratplot,"both")
   print(rat.both)
-  ##   grid.edit(gPath("panel-3-3",".*","GRID.dlgrob"),
-  ##             method=list(cex=2,fontfamily="bold","both"),
-  ##             grep=TRUE)
-  ## can also do this by repeatedly calling direct.label
+
+  ## same as repeated call to direct.label:
   rat.repeated <-
     direct.label(direct.label(ratplot,"last.points"),"first.points")
   print(rat.repeated)
-  ##   grid.edit(gPath("panel-3-5",".*","GRID.dlgrob.first.points"),
-  ##             method=list(cex=2,fontfamily="bold","both"),
-  ##             grep=TRUE)
+
+  ## same with ggplot2:
   if(require(ggplot2)){
-    rp2 <- qplot(Time,weight,data=BodyWeight,geom="line",facets=.~Diet,colour=Rat)
+    rp2 <- qplot(
+      Time,weight,data=BodyWeight,geom="line",facets=.~Diet,colour=Rat)
     print(direct.label(direct.label(rp2,"last.points"),"first.points"))
     print(direct.label(rp2,"both"))
   }
 
+  ## more complex example: first here is a function for computing the
+  ## lasso path.
   mylars <- function
   ## Least angle regression algorithm for calculating lasso solutions.
   (x,
@@ -201,31 +202,17 @@ dl.combine <- structure(function # Combine output of several methods
            else c(j,which(nextvar==colnames(x)))
     }
   }
-  
-  ## Calculate lasso path, plot and label
-  mylasso <- dl.combine(lasso.labels, last.qp)
-  
-  if(require(ElemStatLearn)){
-    pros <- subset(prostate,select=-train,train==TRUE)
-    ycol <- which(names(pros)=="lpsa")
-    x <- as.matrix(pros[-ycol])
-    y <- unlist(pros[ycol])
-    res <- mylars(x,y)
-    P <- xyplot(coef~arclength,res,groups=variable,type="l")
-    plot(direct.label(P,"mylasso"))
-    if(require(ggplot2)){
-      p <- ggplot(res,aes(arclength,coef,colour=variable))+
-        geom_line(aes(group=variable))
-      direct.label(p,"mylasso")
-    }
-  }
 
+  ## Calculate lasso path, plot labels at two points: (1) where the
+  ## variable enters the path, and (2) at the end of the path.
   if(require(lars)){
     data(diabetes,envir=environment())
     dres <- with(diabetes,mylars(x,y))
     P <- xyplot(coef~arclength,dres,groups=variable,type="l")
+    mylasso <- dl.combine("lasso.labels", "last.qp")
     plot(direct.label(P,"mylasso"))
   }
+
 })
 
 gapply.fun <- structure(function # Direct label groups independently
@@ -511,15 +498,14 @@ reduce.cex.lr <- structure(function(d,...){
   d$cex <- (w-right)/w * (w-left)/w * d$cex
   calc.boxes(d)
 },ex=function(){
-  if(require(ElemStatLearn) && require(lars) && require(ggplot2)){
-    pros <- subset(prostate,select=-train,train==TRUE)
-    ycol <- which(names(pros)=="lpsa")
-    x <- as.matrix(pros[-ycol])
-    y <- pros[[ycol]]
-    fit <- lars(x,y,type="lasso")
+
+  if(require(lars) && require(ggplot2)){
+    data(diabetes,package="lars",envir=environment())
+    X <- diabetes$x
+    colnames(X) <- paste(colnames(X), colnames(X))
+    fit <- lars(X,diabetes$y,type="lasso")
     beta <- scale(coef(fit),FALSE,1/fit$normx)
     arclength <- rowSums(abs(beta))
-
     path.list <- list()
     for(variable in colnames(beta)){
       standardized.coef <- beta[, variable]
@@ -532,21 +518,18 @@ reduce.cex.lr <- structure(function(d,...){
     path <- do.call(rbind, path.list)
     p <- ggplot(path,aes(arclength,standardized.coef,colour=variable))+
       geom_line(aes(group=variable))
-
     ## the legend isn't very helpful.
     print(p)
-
     ## add direct labels at the end of the lines.
     direct.label(p, "last.points")
-
     ## on my screen, some of the labels go off the end, so we can use
     ## this Positioning Method to reduce the text size until the labels
     ## are on the plot.
     direct.label(p, list("last.points","reduce.cex.lr"))
-
     ## the default direct labels for lineplots are similar.
     direct.label(p)
   }
+
 })
 
 qp.labels <- structure(function# Make a Positioning Method for non-overlapping lineplot labels

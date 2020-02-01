@@ -1,7 +1,8 @@
 Package: directlabels
-Maintainer: ORPHANED
+Maintainer: Toby Dylan Hocking <toby.hocking@r-project.org>
 Author: Toby Dylan Hocking
-Version: 2018.05.22.1
+Version: 2020.1.31
+BugReports: https://github.com/tdhock/directlabels/issues
 License: GPL-3
 Title: Direct Labels for Multicolor Plots
 Description: An extensible framework
@@ -11,20 +12,15 @@ Description: An extensible framework
  which can be re-used across several different plots.
  There are heuristics for examining "trellis" and "ggplot" objects
  and inferring an appropriate Positioning Method.
-URL: http://directlabels.r-forge.r-project.org/
+URL: https://github.com/tdhock/directlabels
 LazyData: true
-Depends: R(>= 3.4.0)
 Suggests: MASS, inlinedocs, ggplot2 (>= 2.0), rlang, lattice,
-        alphahull, nlme, lars, latticeExtra, dplyr
+        alphahull, nlme, lars, latticeExtra, testthat
 Imports: grid, quadprog
 Collate: utility.function.R compare.R dotplot.R lineplot.R
         densityplot.R ggplot2.R positioning.functions.R doc.R lattice.R
         scatterplot.R contourplot.R
 NeedsCompilation: no
-Packaged: 2020-01-29 17:54:46 UTC; ripley
+Packaged: 2020-01-31 16:59:38 UTC; th798
 Repository: CRAN
-Date/Publication: 2020-01-29 18:19:35 UTC
-X-CRAN-Original-Maintainer: Toby Dylan Hocking
-        <toby.hocking@r-project.org>
-X-CRAN-Comment: Orphaned and corrected on 2020-01-29 as check problems
-        were not corrected in time.
+Date/Publication: 2020-02-01 09:10:02 UTC

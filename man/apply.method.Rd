@@ -5,8 +5,10 @@
 contains all the logic for parsing a Positioning Method and
 sequentially applying its elements to the input data to obtain the
 label positions.}
-\usage{apply.method(method, d, columns.to.check = c("x", "y", 
-    "groups"), ..., debug = FALSE)}
+\usage{apply.method(method, 
+    d, columns.to.check = c("x", 
+        "y", "groups"), 
+    ..., debug = FALSE)}
 \arguments{
   \item{method}{Direct labeling Positioning Method. Starting from the data frame
 of points to plot for the panel, the elements of the Positioning
@@ -15,15 +17,15 @@ resulting data frame is used to draw a direct label. The
 elements of a Positioning Method list can be
 \itemize{
 \item a Positioning Function is any function(d,...) which takes a
-data.frame d with columns x,y,groups and returns another
+data.frame \code{d} with columns x,y,groups and returns another
 data.frame representing the positions of the desired direct
 labels. For a description of all the columns that are interpreted
 for drawing direct labels, see \code{\link{drawDetails.dlgrob}}.
-For example, maxvar.points is a Positioning Function that returns
+For example, \code{\link{maxvar.points}} is a Positioning Function that returns
 a data.frame with columns x,y,groups,hjust,vjust.
 \item a character vector of length 1 is treated as the name of an
 R object. For example, specifying "maxvar.points" means to look up
-the variable called maxvar.points and use that. Using the name of
+the variable called \code{\link{maxvar.points}} and use that. Using the name of
 a Positioning Function is preferable to specifying the Positioning
 Function itself, since then the name is visible in the Positioning
 Method list, which is more interpretable when debugging.

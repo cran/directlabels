@@ -8,16 +8,17 @@ based on the variable specified for color, but these legends can
 be confusing if there are too many colors. Direct labels are a
 useful and clear alternative to a confusing legend in many common
 plots.}
-\usage{direct.label(p, method = NULL, debug = FALSE)}
+\usage{direct.label(p, method = NULL, 
+    debug = FALSE)}
 \arguments{
   \item{p}{The "trellis" or "ggplot" object with things drawn in different
 colors.}
   \item{method}{Positioning Method, which determines the positions of the direct
 labels as a function of the plotted data. If NULL, we examine the
-plot p and try to choose an appropriate default. See
+plot \code{p} and try to choose an appropriate default. See
 \code{\link{apply.method}} for more information about Positioning
 Methods.}
-  \item{debug}{Show debug output?}
+  \item{debug}{Show \code{debug} output?}
 }
 
 \value{A plot with direct labels and no color legend.}

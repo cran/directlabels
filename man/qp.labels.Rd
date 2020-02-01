@@ -3,8 +3,11 @@
 \title{Make a Positioning Method for non-overlapping lineplot labels}
 \description{Use a QP solver to find the best places to put the points on a
 line, subject to the constraint that they should not overlap.}
-\usage{qp.labels(target.var, lower.var, upper.var, order.labels = function(d) order(d[, 
-    target.var]), limits = NULL)}
+\usage{qp.labels(target.var, 
+    lower.var, upper.var, 
+    order.labels = function(d) order(d[, 
+        target.var]), 
+    limits = NULL)}
 \arguments{
   \item{target.var}{Variable name of the label target.}
   \item{lower.var}{Variable name of the lower limit of each label bounding box.}
@@ -16,13 +19,13 @@ groups have exactly the same value at the endpoint near the label.}
   \item{limits}{Function that takes the data.frame of labels an returns a numeric
 vector of length 2. If finite, these values will be used to add
 constraints to the QP: limits[1] is the lower limit for the first
-label's lower.var, and limits[2] is the upper limit for the last
-labels's upper.var. Or NULL for no limits.}
+label's \code{lower.var}, and limits[2] is the upper limit for the last
+labels's \code{upper.var}. Or NULL for no \code{limits}.}
 }
 
-\value{Positioning Method that adjusts target.var so there is no overlap
-of the label bounding boxes, as specified by upper.var and
-lower.var.}
+\value{Positioning Method that adjusts \code{target.var} so there is no overlap
+of the label bounding boxes, as specified by \code{upper.var} and
+\code{lower.var}.}
 
 \author{Toby Dylan Hocking}
 
