@@ -317,3 +317,78 @@ ggplot()+
     labels=c("0", "0.5", "1"))
 
 
+## -----------------------------------------------------------------------------
+m <- RColorBrewer::brewer.pal.info
+brewer.dt.list <- list()
+for(brewer.row in 1:nrow(m)){
+  brewer.name <- rownames(m)[[brewer.row]]
+  brewer.info <- m[brewer.name, ]
+  col.vec <- RColorBrewer::brewer.pal(brewer.info[, "maxcolors"], brewer.name)
+  rgb.mat <- col2rgb(col.vec)
+  hsv.mat <- rgb2hsv(rgb.mat)
+  brewer.dt.list[[brewer.name]] <- data.frame(
+    brewer.name,
+    brewer.fac=factor(brewer.name, rownames(m)),
+    brewer.row,
+    category=factor(brewer.info[, "category"], c("seq", "qual", "div")),
+    column=seq_along(col.vec),
+    color=col.vec,
+    t(rgb.mat),
+    t(hsv.mat))
+}
+brewer.dt <- do.call(rbind, brewer.dt.list)
+library(ggplot2)
+ggplot()+
+  theme_bw()+
+  theme(panel.spacing=grid::unit(0, "lines"))+
+  facet_grid(category ~ ., scales="free", space="free")+
+  geom_tile(aes(
+    factor(column), brewer.fac, fill=color),
+    data=brewer.dt)+
+  geom_text(aes(
+    factor(column), brewer.fac, label=brewer.fac, color=ifelse(
+      ((0.3 * red) + (0.59 * green) + (0.11 * blue))/255 < 0.5, "white", "black")),
+    data=brewer.dt)+
+  scale_fill_identity()+
+  scale_color_identity()
+
+## -----------------------------------------------------------------------------
+
+data(odd_timings, package="directlabels")
+library(ggplot2)
+gg <- ggplot()+
+  geom_line(aes(
+    N.col, median.seconds, color=fun),
+    data=odd_timings)+
+  facet_grid(. ~ captures)+
+  scale_x_log10(limits=c(10, 1e6))+
+  scale_y_log10()
+directlabels::direct.label(gg, "right.polygons")
+
+
+## -----------------------------------------------------------------------------
+data(odd_timings, package="directlabels")
+zero <- subset(odd_timings, captures==0)
+on.right <- with(zero, N.col==max(N.col))
+funs.right <- unique(zero[on.right, "fun"])
+is.right <- zero$fun %in% funs.right
+timings.right <- zero[is.right,]
+timings.left <- zero[!is.right,]
+library(ggplot2)
+gg <- ggplot()+
+  geom_line(aes(
+    N.col, median.seconds, color=fun),
+    data=zero)+
+  directlabels::geom_dl(aes(
+    N.col, median.seconds, color=fun, label=fun),
+    method="right.polygons",
+    data=timings.left)+
+  directlabels::geom_dl(aes(
+    N.col, median.seconds, color=fun, label=fun),
+    method="right.polygons",
+    data=timings.right)+
+  scale_x_log10(limits=c(10, 1e6))+
+  scale_y_log10()
+gg
+
+
