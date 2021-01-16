@@ -1,6 +1,6 @@
-930606ed85d2ae9beb92f51ec0e292f3 *DESCRIPTION
+ffb31983742e322c1a4751f955a5c1bb *DESCRIPTION
 45e938e5ba3ff86a8588b87f6be67909 *NAMESPACE
-48d4352556b9acdf7af05c4a44f4ca5e *NEWS
+5485c9f7c781fea876d6282cd6a556e7 *NEWS
 cc47d08527345c4e32fc6ab39c0659ea *R/compare.R
 3beef221169538b6db94f9e6b07f198f *R/contourplot.R
 4bbb59473a6251270b3c82f73f13da86 *R/densityplot.R
@@ -21,9 +21,9 @@ f7d86d8489c43cfd270277838ec5daa7 *data/normal.l2.cluster.RData
 a0410a12ae6abe7ec3e02d5c00abf8e8 *data/odd_timings.RData
 b78c7970c52e0c6cc92d4b0acda8e997 *data/projectionSeconds.RData
 2e659f517ae9236b6491dd57735b3835 *data/svmtrain.RData
-ca502b3e82bc9a4952508071373b234f *inst/doc/examples.R
-7854b2490880a7ae1cfd99535e4fc17f *inst/doc/examples.Rmd
-c15d83247d65f54871d8d04e888298b9 *inst/doc/examples.html
+12554e2bbb19336cebea15a210ee74ed *inst/doc/examples.R
+1ef50a770829f7f40f4261246792ea31 *inst/doc/examples.Rmd
+0f0c2fa8f7d7824c9cded89ab93ed5ac *inst/doc/examples.html
 3c5ed2f7375cebab73de2e238ec8e092 *man/GeomDl.Rd
 e62e2016e87d96ec42bc1cad9794d992 *man/LOPART.ROC.Rd
 dfd2289d75bf9ca289e77068e0a0a52d *man/LOPART100.Rd
@@ -141,4 +141,4 @@ b9539691823b49b2f653eaaae90c9805 *tests/methods.R
 276428c5e241477521fc7d763ce77cd1 *tests/testthat/test_lattice.R
 2169a5cb5fc4fe9fb06b652f1e152754 *tests/testthat/test_nonsyntactic.R
 218329c708483de2a6a9a809cd0cb3ce *tests/unattached.R
-7854b2490880a7ae1cfd99535e4fc17f *vignettes/examples.Rmd
+1ef50a770829f7f40f4261246792ea31 *vignettes/examples.Rmd

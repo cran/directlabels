@@ -3,7 +3,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-options(bitmapType="cairo")
 
 ## -----------------------------------------------------------------------------
 
@@ -355,12 +354,12 @@ ggplot()+
 ## -----------------------------------------------------------------------------
 
 data(odd_timings, package="directlabels")
+odd4 <- subset(odd_timings, captures==4)
 library(ggplot2)
 gg <- ggplot()+
   geom_line(aes(
     N.col, median.seconds, color=fun),
-    data=odd_timings)+
-  facet_grid(. ~ captures)+
+    data=odd4)+
   scale_x_log10(limits=c(10, 1e6))+
   scale_y_log10()
 directlabels::direct.label(gg, "right.polygons")
