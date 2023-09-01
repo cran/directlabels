@@ -23,121 +23,124 @@ for(param.i in 1:nrow(param.df)){
 }
 density.df <- do.call(rbind, density.df.list)
 
-library(ggplot2)
-gg <- ggplot()+
-  geom_line(aes(
-    observation, density, color=param.fac),
-    data=density.df)
-directlabels::direct.label(gg, "top.polygons")
+if(require(ggplot2)){
+  gg <- ggplot()+
+    geom_line(aes(
+      observation, density, color=param.fac),
+      data=density.df)
+  directlabels::direct.label(gg, "top.polygons")
+}
 
-density.df$mean.lab <- paste0("mean=", density.df$mean)
-gg <- ggplot()+
-  geom_line(aes(
-    observation, density, color=param.fac),
-    data=density.df)+
-  directlabels::geom_dl(aes(
-    observation, density,
-    color=param.fac,
-    label.group=param.fac,
-    label=mean.lab),
-    method="top.polygons",
-    data=density.df)
-gg
+if(require(ggplot2)){
+  density.df$mean.lab <- paste0("mean=", density.df$mean)
+  gg <- ggplot()+
+    geom_line(aes(
+      observation, density, color=param.fac),
+      data=density.df)+
+    directlabels::geom_dl(aes(
+      observation, density,
+      color=param.fac,
+      label.group=param.fac,
+      label=mean.lab),
+      method="top.polygons",
+      data=density.df)
+  gg
+}
 
-gg <- ggplot()+
-  geom_line(aes(
-    observation, density, color=mean.lab, group=param.fac),
-    data=density.df)
-directlabels::direct.label(gg, "top.polygons")
+if(require(ggplot2)){
+  gg <- ggplot()+
+    geom_line(aes(
+      observation, density, color=mean.lab, group=param.fac),
+      data=density.df)
+  directlabels::direct.label(gg, "top.polygons")
+}
 
-data(BodyWeight, package="nlme")
-gg <- ggplot()+
-  geom_line(aes(
-    Time, weight, color=Rat),
-    data=BodyWeight)+
-  facet_grid(. ~ Diet)
-gg
+if(require(ggplot2)){
+  data(BodyWeight, package="nlme")
+  gg <- ggplot()+
+    geom_line(aes(
+      Time, weight, color=Rat),
+      data=BodyWeight)+
+    facet_grid(. ~ Diet)
+  gg
+}
 
-directlabels::direct.label(gg, "right.polygons")
+if(require(ggplot2)){
+  directlabels::direct.label(gg, "right.polygons")
+}
 
-gg.wider <- gg+xlim(-10, 70)
-directlabels::direct.label(gg.wider, "right.polygons")
+if(require(ggplot2)){
+  gg.wider <- gg+xlim(-10, 70)
+  directlabels::direct.label(gg.wider, "right.polygons")
+}
 
-directlabels::direct.label(gg.wider, "left.polygons")
-
-
-## -----------------------------------------------------------------------------
-
-library("ggplot2")
-library(directlabels)
-set.seed(124234345)
-# Generate data
-df.2 <- data.frame("n_gram" = c("word1"),
-                   "year" = rep(100:199),
-                   "match_count" = runif(100 ,min = 1000 , max = 2000))
-df.2 <- rbind(df.2, data.frame("n_gram" = c("word2"),
-                               "year" = rep(100:199),
-                               "match_count" = runif(100 ,min = 1000 , max = 2000)) )
-# use stat smooth with geom_dl to get matching direct labels.
-span <- 0.3
-ggplot(df.2, aes(year, match_count, group=n_gram, color=n_gram)) +
-  geom_line(alpha = I(7/10), color="grey") +
-  stat_smooth(size=2, span=span, se=F) +
-  geom_dl(aes(
-    label=n_gram),
-    ## method should be passed to geom_dl but ggplot2 (mistakenly?)
-    ## passes it to stat_smooth, which rightly raises a warning about
-    ## an unknown smoothing function.
-    method = "last.qp", 
-    stat="smooth", span=span) +
-  xlim(c(100,220))+
-  guides(colour="none")
-
+if(require(ggplot2)){
+  directlabels::direct.label(gg.wider, "left.polygons")
+}
 
 ## -----------------------------------------------------------------------------
 
-library("dplyr")
-library("ggplot2")
-library("directlabels")
-library("ggthemes")
+if(require(ggplot2)){
+  set.seed(124234345)
+  # Generate data
+  df.2 <- data.frame(
+    "n_gram" = c("word1"),
+    "year" = rep(100:199),
+    "match_count" = runif(100 ,min = 1000 , max = 2000))
+  df.2 <- rbind(df.2, data.frame(
+    "n_gram" = c("word2"),
+    "year" = rep(100:199),
+    "match_count" = runif(100 ,min = 1000 , max = 2000)) )
+  # use stat smooth with geom_dl to get matching direct labels.
+  span <- 0.3
+  ggplot(df.2, aes(year, match_count, group=n_gram, color=n_gram)) +
+    geom_line(alpha = I(7/10), color="grey") +
+    stat_smooth(size=2, span=span, se=F) +
+    directlabels::geom_dl(aes(
+      label=n_gram),
+      ## method should be passed to geom_dl but ggplot2 (mistakenly?)
+      ## passes it to stat_smooth, which rightly raises a warning about
+      ## an unknown smoothing function.
+      method = "last.qp", 
+      stat="smooth", span=span) +
+    xlim(c(100,220))+
+    guides(colour="none")
+}
 
-## create data
-aaa <- structure(
-  list(x = c(28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 
-             18, 17, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17),
-       count = c(2344L, 
-                 4088L, 3247L, 2808L, 2046L, 1669L, 1315L, 951L, 610L, 543L, 469L, 
-                 370L, 937L, 1116L, 550L, 379L, 282L, 204L, 174L, 160L, 136L, 
-                 132L, 128L, 122L),
-       term = c("aaa", "aaa", "aaa", "aaa", "aaa", 
-                "aaa", "aaa", "aaa", "aaa", "aaa", "aaa", "aaa", "bbb", "bbb", 
-                "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", 
-                "bbb")),
-  class = c("tbl_df", "tbl", "data.frame"),
-  row.names = c(NA, 
-                -24L),
-  .Names = c("x", "count", "term"))
-## have a look
-aaa
+## -----------------------------------------------------------------------------
 
-## initial plot
-p2 <- aaa %>% ggplot(aes(x = x, y = count, group = term, colour = term)) + geom_line()
-## have a look
-p2
-
-## works
-direct.label(p2)
-
-
-
-## plot with theme
-p2 <- aaa %>% ggplot(aes(x = x, y = count, group = term, colour = term)) + geom_line() + theme_fivethirtyeight()
-## have a look
-p2
-
-## used to fail but should be OK as of 19 June 2020.
-direct.label(p2)
-
+if(require(ggplot2) && require(dplyr) && require(ggthemes)){
+  ## create data
+  aaa <- structure(
+    list(x = c(28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 
+               18, 17, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17),
+         count = c(2344L, 
+                   4088L, 3247L, 2808L, 2046L, 1669L, 1315L, 951L, 610L, 543L, 469L, 
+                   370L, 937L, 1116L, 550L, 379L, 282L, 204L, 174L, 160L, 136L, 
+                   132L, 128L, 122L),
+         term = c("aaa", "aaa", "aaa", "aaa", "aaa", 
+                  "aaa", "aaa", "aaa", "aaa", "aaa", "aaa", "aaa", "bbb", "bbb", 
+                  "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", "bbb", 
+                  "bbb")),
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = c(NA, 
+                  -24L),
+    .Names = c("x", "count", "term"))
+  ## have a look
+  print(aaa)
+  ## initial plot
+  p2 <- aaa %>% ggplot(aes(x = x, y = count, group = term, colour = term)) + geom_line()
+  ## have a look
+  print(p2)
+  ## works
+  print(directlabels::direct.label(p2))
+  ## plot with theme
+  p2 <- aaa %>% ggplot(aes(x = x, y = count, group = term, colour = term)) + geom_line() + theme_fivethirtyeight()
+  ## have a look
+  print(p2)
+  ## used to fail but should be OK as of 19 June 2020.
+  print(directlabels::direct.label(p2))
+}
 
 ## -----------------------------------------------------------------------------
 
@@ -171,199 +174,196 @@ blank.dt <- data.frame(
 label.colors <- c(
   "1"="#ff7d7d",
   "0"="#f6c48f")
-library(ggplot2)
-gg <- ggplot()+
-  geom_blank(aes(
-    position, cost),
-    data=COST(blank.dt))+
-  geom_vline(aes(
-    xintercept=up.to.t),
-    color=sig.color,
-    data=t.dt)+
-  geom_text(aes(
-    up.to.t, 13,
-    hjust=my.hjust(up.to.t),
-    label=sprintf(
-      "$t=%s$", up.to.t)),
-    color=sig.color,
-    data=DATA(t.dt))+
-  geom_rect(aes(
-    xmin=start, xmax=end,
-    fill=paste(changes),
-    ymin=-Inf, ymax=Inf),
-    alpha=0.5,
-    data=LOPART100$labels)+
-  scale_fill_manual("label", values=label.colors)+
-  theme_bw()+
-  theme(panel.spacing=grid::unit(0, "lines"))+
-  facet_grid(y.var ~ ., scales="free")+
-  geom_text(aes(
-    change, 1,
-    hjust=my.hjust(change),
-    label=sprintf(
-      "$\\tau = %d$", tau)),
-    vjust=0,
-    data=DATA(change.dt))+
-  geom_vline(aes(
-    xintercept=change),
-    data=change.dt)+
-  geom_segment(aes(
-    start-0.5, mean,
-    size=Algorithm,
-    color=Algorithm,
-    xend=end+0.5, yend=mean),
-    data=DATA(LOPART100$segments))+
-  geom_point(aes(
-    position, signal),
-    color=sig.color,
-    shape=1,
-    data=DATA(LOPART100$signal))+
-  scale_size_manual(values=c(
-    OPART=1.5,
-    LOPART=0.5),
-    drop=FALSE)+
-  scale_shape_manual(values=c(
-    OPART=1,
-    LOPART=2),
-    drop=FALSE)+
-  scale_color_manual(values=c(
-    OPART="deepskyblue",
-    LOPART="black"),
-    drop=FALSE)+
-  ylab("")+
-  scale_x_continuous(
-    "position $t,\\tau$",
-    breaks=seq(0, 100, by=10))+
-  geom_point(aes(
-    change, cost_candidates,
-    color=Algorithm, shape=Algorithm),
-    data=COST(LOPART100$cost))+
-  geom_point(aes(
-    change, cost_candidates,
-    color=Algorithm),
-    data=COST(min.dt))
-print(gg)
-
-label.cost <- function(df){  
-  gg+
-    directlabels::geom_dl(aes(
-      change, cost_candidates,
+if(require(ggplot2)){
+  gg <- ggplot()+
+    geom_blank(aes(
+      position, cost),
+      data=COST(blank.dt))+
+    geom_vline(aes(
+      xintercept=up.to.t),
+      color=sig.color,
+      data=t.dt)+
+    geom_text(aes(
+      up.to.t, 13,
+      hjust=my.hjust(up.to.t),
+      label=sprintf(
+        "$t=%s$", up.to.t)),
+      color=sig.color,
+      data=DATA(t.dt))+
+    geom_rect(aes(
+      xmin=start, xmax=end,
+      fill=paste(changes),
+      ymin=-Inf, ymax=Inf),
+      alpha=0.5,
+      data=LOPART100$labels)+
+    scale_fill_manual("label", values=label.colors)+
+    theme_bw()+
+    theme(panel.spacing=grid::unit(0, "lines"))+
+    facet_grid(y.var ~ ., scales="free")+
+    geom_text(aes(
+      change, 1,
+      hjust=my.hjust(change),
+      label=sprintf(
+        "$\\tau = %d$", tau)),
+      vjust=0,
+      data=DATA(change.dt))+
+    geom_vline(aes(
+      xintercept=change),
+      data=change.dt)+
+    geom_segment(aes(
+      start-0.5, mean,
+      size=Algorithm,
       color=Algorithm,
-      label.group=Algorithm,
-      label=sprintf("$\\tau^*_{%d} = %d$", up.to.t, tau)),
-      method="bottom.polygons",
-      data=COST(df))
+      xend=end+0.5, yend=mean),
+      data=DATA(LOPART100$segments))+
+    geom_point(aes(
+      position, signal),
+      color=sig.color,
+      shape=1,
+      data=DATA(LOPART100$signal))+
+    scale_size_manual(values=c(
+      OPART=1.5,
+      LOPART=0.5),
+      drop=FALSE)+
+    scale_shape_manual(values=c(
+      OPART=1,
+      LOPART=2),
+      drop=FALSE)+
+    scale_color_manual(values=c(
+      OPART="deepskyblue",
+      LOPART="black"),
+      drop=FALSE)+
+    ylab("")+
+    scale_x_continuous(
+      "position $t,\\tau$",
+      breaks=seq(0, 100, by=10))+
+    geom_point(aes(
+      change, cost_candidates,
+      color=Algorithm, shape=Algorithm),
+      data=COST(LOPART100$cost))+
+    geom_point(aes(
+      change, cost_candidates,
+      color=Algorithm),
+      data=COST(min.dt))
+  print(gg)
+  label.cost <- function(df){  
+    gg+
+      directlabels::geom_dl(aes(
+        change, cost_candidates,
+        color=Algorithm,
+        label.group=Algorithm,
+        label=sprintf("$\\tau^*_{%d} = %d$", up.to.t, tau)),
+        method="bottom.polygons",
+        data=COST(df))
+  }
+  print(label.cost(LOPART100$cost))
+  ## to make sure it works when there is only one point to label.
+  print(label.cost(min.dt))
 }
-label.cost(LOPART100$cost)
-
-## to make sure it works when there is only one point to label.
-label.cost(min.dt)
-    
 
 ## -----------------------------------------------------------------------------
-
 data(LOPART.ROC, package="directlabels")
 algo.colors <- c(
   OPART="#0077CC",
   LOPART="black",
   SegAnnot="#22CC22")
-library(ggplot2)
-ggplot()+
-  theme_bw()+
-  scale_color_manual(values=algo.colors)+
-  scale_size_manual(values=c(
-    LOPART=1.5,
-    OPART=1))+
-  directlabels::geom_dl(aes(
-    FPR, TPR,
-    color=model.name,
-    label=paste0(model.name, ifelse(is.na(auc), "", sprintf(
-      " AUC=%.3f", auc
-    )))),
-    method=list(
-      cex=0.8,
-      directlabels::polygon.method(
-        "right",
-        offset.cm=0.5,
-        padding.cm=0.05)),
-    data=LOPART.ROC$points)+
-  geom_path(aes(
-    FPR, TPR,
-    color=model.name,
-    size=model.name,
-    group=paste(model.name, test.fold)),
-    data=LOPART.ROC$roc)+
-  geom_point(aes(
-    FPR, TPR,
-    color=model.name),
-    size=3,
-    shape=21,
-    fill="white",
-    data=LOPART.ROC$points)+
-  theme(
-    panel.spacing=grid::unit(0, "lines"),
-    legend.position="none"
-  )+
-  facet_grid(test.fold ~ Penalty + Parameters, labeller=label_both)+
-  coord_equal()+
-  scale_x_continuous(
-    "False Positive Rate (test set labels)",
-    breaks=c(0, 0.5, 1),
-    labels=c("0", "0.5", "1"))+
-  scale_y_continuous(
-    "True Positive Rate (test set labels)",
-    breaks=c(0, 0.5, 1),
-    labels=c("0", "0.5", "1"))
-
-
-## -----------------------------------------------------------------------------
-m <- RColorBrewer::brewer.pal.info
-brewer.dt.list <- list()
-for(brewer.row in 1:nrow(m)){
-  brewer.name <- rownames(m)[[brewer.row]]
-  brewer.info <- m[brewer.name, ]
-  col.vec <- RColorBrewer::brewer.pal(brewer.info[, "maxcolors"], brewer.name)
-  rgb.mat <- col2rgb(col.vec)
-  hsv.mat <- rgb2hsv(rgb.mat)
-  brewer.dt.list[[brewer.name]] <- data.frame(
-    brewer.name,
-    brewer.fac=factor(brewer.name, rownames(m)),
-    brewer.row,
-    category=factor(brewer.info[, "category"], c("seq", "qual", "div")),
-    column=seq_along(col.vec),
-    color=col.vec,
-    t(rgb.mat),
-    t(hsv.mat))
+if(require(ggplot2)){
+  ggplot()+
+    theme_bw()+
+    scale_color_manual(values=algo.colors)+
+    scale_size_manual(values=c(
+      LOPART=1.5,
+      OPART=1))+
+    directlabels::geom_dl(aes(
+      FPR, TPR,
+      color=model.name,
+      label=paste0(model.name, ifelse(is.na(auc), "", sprintf(
+        " AUC=%.3f", auc
+      )))),
+      method=list(
+        cex=0.8,
+        directlabels::polygon.method(
+          "right",
+          offset.cm=0.5,
+          padding.cm=0.05)),
+      data=LOPART.ROC$points)+
+    geom_path(aes(
+      FPR, TPR,
+      color=model.name,
+      size=model.name,
+      group=paste(model.name, test.fold)),
+      data=LOPART.ROC$roc)+
+    geom_point(aes(
+      FPR, TPR,
+      color=model.name),
+      size=3,
+      shape=21,
+      fill="white",
+      data=LOPART.ROC$points)+
+    theme(
+      panel.spacing=grid::unit(0, "lines"),
+      legend.position="none"
+    )+
+    facet_grid(test.fold ~ Penalty + Parameters, labeller=label_both)+
+    coord_equal()+
+    scale_x_continuous(
+      "False Positive Rate (test set labels)",
+      breaks=c(0, 0.5, 1),
+      labels=c("0", "0.5", "1"))+
+    scale_y_continuous(
+      "True Positive Rate (test set labels)",
+      breaks=c(0, 0.5, 1),
+      labels=c("0", "0.5", "1"))
 }
-brewer.dt <- do.call(rbind, brewer.dt.list)
-library(ggplot2)
-ggplot()+
-  theme_bw()+
-  theme(panel.spacing=grid::unit(0, "lines"))+
-  facet_grid(category ~ ., scales="free", space="free")+
-  geom_tile(aes(
-    factor(column), brewer.fac, fill=color),
-    data=brewer.dt)+
-  geom_text(aes(
-    factor(column), brewer.fac, label=brewer.fac, color=ifelse(
-      ((0.3 * red) + (0.59 * green) + (0.11 * blue))/255 < 0.5, "white", "black")),
-    data=brewer.dt)+
-  scale_fill_identity()+
-  scale_color_identity()
 
 ## -----------------------------------------------------------------------------
+if(require(RColorBrewer) && require(ggplot2)){
+  m <- RColorBrewer::brewer.pal.info
+  brewer.dt.list <- list()
+  for(brewer.row in 1:nrow(m)){
+    brewer.name <- rownames(m)[[brewer.row]]
+    brewer.info <- m[brewer.name, ]
+    col.vec <- RColorBrewer::brewer.pal(brewer.info[, "maxcolors"], brewer.name)
+    rgb.mat <- col2rgb(col.vec)
+    hsv.mat <- rgb2hsv(rgb.mat)
+    brewer.dt.list[[brewer.name]] <- data.frame(
+      brewer.name,
+      brewer.fac=factor(brewer.name, rownames(m)),
+      brewer.row,
+      category=factor(brewer.info[, "category"], c("seq", "qual", "div")),
+      column=seq_along(col.vec),
+      color=col.vec,
+      t(rgb.mat),
+      t(hsv.mat))
+  }
+  brewer.dt <- do.call(rbind, brewer.dt.list)
+  ggplot()+
+    theme_bw()+
+    theme(panel.spacing=grid::unit(0, "lines"))+
+    facet_grid(category ~ ., scales="free", space="free")+
+    geom_tile(aes(
+      factor(column), brewer.fac, fill=color),
+      data=brewer.dt)+
+    geom_text(aes(
+      factor(column), brewer.fac, label=brewer.fac, color=ifelse(
+      ((0.3 * red) + (0.59 * green) + (0.11 * blue))/255 < 0.5, "white", "black")),
+      data=brewer.dt)+
+    scale_fill_identity()+
+    scale_color_identity()
+}
 
+## -----------------------------------------------------------------------------
 data(odd_timings, package="directlabels")
 odd4 <- subset(odd_timings, captures==4)
-library(ggplot2)
-gg <- ggplot()+
-  geom_line(aes(
-    N.col, median.seconds, color=fun),
-    data=odd4)+
-  scale_x_log10(limits=c(10, 1e6))+
-  scale_y_log10()
-directlabels::direct.label(gg, "right.polygons")
-
+if(require(ggplot2)){
+  gg <- ggplot()+
+    geom_line(aes(
+      N.col, median.seconds, color=fun),
+      data=odd4)+
+    scale_x_log10(limits=c(10, 1e6))+
+    scale_y_log10()
+  directlabels::direct.label(gg, "right.polygons")
+}
 
 ## -----------------------------------------------------------------------------
 data(odd_timings, package="directlabels")
@@ -373,21 +373,21 @@ funs.right <- unique(zero[on.right, "fun"])
 is.right <- zero$fun %in% funs.right
 timings.right <- zero[is.right,]
 timings.left <- zero[!is.right,]
-library(ggplot2)
-gg <- ggplot()+
-  geom_line(aes(
-    N.col, median.seconds, color=fun),
-    data=zero)+
-  directlabels::geom_dl(aes(
-    N.col, median.seconds, color=fun, label=fun),
-    method="right.polygons",
-    data=timings.left)+
-  directlabels::geom_dl(aes(
-    N.col, median.seconds, color=fun, label=fun),
-    method="right.polygons",
-    data=timings.right)+
-  scale_x_log10(limits=c(10, 1e6))+
-  scale_y_log10()
-gg
-
+if(require(ggplot2)){
+  gg <- ggplot()+
+    geom_line(aes(
+      N.col, median.seconds, color=fun),
+      data=zero)+
+    directlabels::geom_dl(aes(
+      N.col, median.seconds, color=fun, label=fun),
+      method="right.polygons",
+      data=timings.left)+
+    directlabels::geom_dl(aes(
+      N.col, median.seconds, color=fun, label=fun),
+      method="right.polygons",
+      data=timings.right)+
+    scale_x_log10(limits=c(10, 1e6))+
+    scale_y_log10()
+  gg
+}
 
