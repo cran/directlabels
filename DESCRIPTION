@@ -1,7 +1,12 @@
 Package: directlabels
 Maintainer: Toby Dylan Hocking <toby.hocking@r-project.org>
-Author: Toby Dylan Hocking
-Version: 2024.1.21
+Authors@R: person(
+ given = c("Toby", "Dylan"),
+ family = "Hocking",
+ role = c("aut", "cre"),
+ email = "toby.hocking@r-project.org",
+ comment = c(ORCID="0000-0002-3146-0865"))
+Version: 2025.5.20
 BugReports: https://github.com/tdhock/directlabels/issues
 License: GPL-3
 Title: Direct Labels for Multicolor Plots
@@ -23,6 +28,8 @@ Collate: utility.function.R compare.R dotplot.R lineplot.R
         scatterplot.R contourplot.R
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-01-24 18:50:25 UTC; th798
+Packaged: 2025-05-20 09:36:58 UTC; hoct2726
+Author: Toby Dylan Hocking [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-3146-0865>)
 Repository: CRAN
-Date/Publication: 2024-01-24 19:20:07 UTC
+Date/Publication: 2025-05-20 10:50:02 UTC
